@@ -32,6 +32,5 @@ int find_new_id(bst** trees){
         if(bst[i] == NULL){
             return i;
         }
-
     }
 }

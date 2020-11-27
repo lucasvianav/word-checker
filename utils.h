@@ -5,9 +5,10 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-// Remove the end of the input
+// Removes the end of the input
 void remove_hashtag(char* input);
 
-
+// Finds the id number of the new created dictionary
+int find_new_id(bst** trees);
 
 #endif
