@@ -13,7 +13,7 @@
 int main(){
 
     int i;
-    int n_frequent_words,current_dictionary;
+    int n_frequent_words,current_dictionary,current_id;
     int operation = 1;
     int num_dictionaries = 0;
 
@@ -38,14 +38,25 @@ int main(){
 
             // Create
             case 1:
+
+            if(num_dictionaries > 3){
+                printf("IMPOSSIVEL CRIAR\n");
+                break;
+            }
+
+            current_dictionary = find_new_id(dictionaries);
+
             break;
 
             // Update
             case 2:
+            scanf("%d",&current_dictionary);
             break;
 
             // Delete
             case 3:
+            scanf("%d",&current_dictionary);
+
             break;
 
             // Verify
@@ -55,7 +66,8 @@ int main(){
             
             char* input;
             fgets(input,MAX_INPUT_SIZE,stdin);
-
+            remove_hashtag(input);
+            
             break;
 
             default:

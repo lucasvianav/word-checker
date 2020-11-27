@@ -5,6 +5,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+// Remove the end of the input
+void remove_hashtag(char* input);
 
 
 
