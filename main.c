@@ -13,6 +13,7 @@
 
 int main(){
 
+    /*
     int i;
     int n_frequent_words,current_dictionary,current_id;
     int operation = 1;
@@ -84,6 +85,8 @@ int main(){
     }
 
     free(dictionaries);
+
+    */
 
     return 0;
 }

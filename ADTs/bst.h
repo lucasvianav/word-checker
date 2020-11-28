@@ -38,4 +38,11 @@ item bst_search(bst *t, char *key);
 // Printa todos os itens da BST em ordem
 void bst_print(bst *t);
 
+// Aloca os 3 dicionários necessários para a main
+bst** allocate_dictionaires();
+
+// Verifica se ainda é possível criar um dicionário
+// Se sim, retorna o id
+int get_new_dict_id(bst **dictionaries);
+
 #endif

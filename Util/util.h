@@ -19,9 +19,7 @@ typedef struct item_ {
 } item;
 
 // Removes the end of the input
-void removeHashtag(char* string);
+void remove_hashtag(char* string);
 
-// Finds the id number of the new created dictionary
-int getNewDictId(bst** dictionaries);
 
 #endif

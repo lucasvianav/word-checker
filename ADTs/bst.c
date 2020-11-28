@@ -186,7 +186,7 @@ item auxSearch(node *current, char *key){
         ? ErrorItem // nesse caso, retorna um erro
         : (strcmp(current->word.string, key) == 0) // caso contrário, verifica se o nó atual possui a chave buscada
             ? current->word // se sim, retorna o item neste nó
-            : (strmp(current->word.string, key) > 0) // se não, verifica em qual subárvore (esquerda ou direita) a chave deve está
+            : (strcmp(current->word.string, key) > 0) // se não, verifica em qual subárvore (esquerda ou direita) a chave deve está
                 ? auxSearch(current->left, key) // e recursivamente busca ela
                 : auxSearch(current->right, key);
 }
@@ -227,4 +227,30 @@ void bst_print(bst *t){
     (t != NULL) ? auxPrint(t->root) : printf("%d\n", Error);
     
     return;
+}
+
+int get_new_dict_id(bst **dictionaries){
+    
+    if(dictionaries == NULL){ 
+        return Error; 
+    }
+    
+    for(int i = 0; i < 3; i++){ 
+        if(dictionaries[i] == NULL){ 
+            return i; 
+            } 
+        }
+
+    return Error;
+}
+
+bst** allocate_dictionaires(){
+
+    bst** dicts =(bst**)malloc(3 * sizeof(bst*));
+
+    for(int i = 0; i < 3; i++){
+        dicts[i] = (bst*)malloc(sizeof(bst));
+    }
+
+    return dicts;
 }

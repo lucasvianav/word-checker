@@ -9,17 +9,10 @@
 #include "util.h"
 #include "../ADTs/bst.h"
 
-void removeHashtag(char *string){
+void remove_hashtag(char *string){
     int i = 0;
     while(string[i] != '#'){ i++; }
     string[i] = '\0';
 
     return;
-}
-
-int getNewDictId(bst **dictionaries){
-    if(dictionaries == NULL){ return Error; }
-    for(int i = 0; i < MAX_DICTIONARIES; i++){ if(dictionaries[i] == NULL){ return i; } }
-
-    return Error;
 }
