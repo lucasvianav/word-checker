@@ -1,9 +1,15 @@
+/*
+    Daniel Carvalho Dantas 10685702
+    Lucas Viana Vilela 10748409
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
-#include "./abb.h"
+#include <string.h>
+#include "./bst.h"
 
 struct node_ {
-    item movie;
+    item word;
     struct node_ *left; // subárvore à esquerda do nó
     struct node_ *right; // subárvore à direita do nó
 };
@@ -11,17 +17,14 @@ typedef struct node_ node;
 
 struct bst_ {
     node *root;
-    int height; // altura da árvore
 };
 
 
 bst *bst_new(){
     bst *tree = (bst *)malloc(sizeof(bst)); // aloca uma nova BST
-
     if(tree == NULL){ return NULL; } // verifica se a alocação foi bem-sucedida
 
     tree->root = NULL; // anula a raiz
-    tree->height = 0; // inicia a altura da árvore como 0
 
     return tree;
 }
@@ -51,7 +54,7 @@ int bst_delete(bst **t){
     free(*t); // desaloca a árvore
     *t = NULL;
 
-    return 1;
+    return Success;
 }
 
 // função interna que insere o nó new na posição correta no interior
@@ -59,24 +62,27 @@ int bst_delete(bst **t){
 // vai incrementar height para cada nível que descer na árvore
 // no total, vai somar comprimento do percurso feito + 1 ao valor
 // inicial de height
-int auxInsert(node **current, node *new, int *height){
-    (*height)++;
-
+int auxInsert(node **current, node *new){
     if(*current == NULL){ // caso base --> a posição correta para o novo nó foi encontrada
         *current = new; // insere na posição
-        return 1;
+        return Success;
     }
 
     // caso contrário:
 
-    return ((*current)->movie.key > new->movie.key) // se a chave do nó atual for maior do que a do novo nó
-        ? auxInsert(&((*current)->left), new, height) // recursivamente procura a posição para inserir na subárvore esquerda
-        : ((*current)->movie.key < new->movie.key) // se for menor
-            ? auxInsert(&((*current)->right), new, height) // faz o mesmo na subárvore direita
-            : Error; // se for igual, retorna erro (o item do novo nó já está contido na árvore)
+    // se a palavra do nó atual for igual ao do novo nó
+    if(strcmp((*current)->word.string, new->word.string) == 0){ return Error; }
+
+    // se a palavra do nó atual alfabeticamente viria depois da do novo nó
+    else if(strcmp((*current)->word.string, new->word.string) > 0){
+        return auxInsert(&((*current)->left), new); // recursivamente procura a posição para inserir na subárvore esquerda
+    }
+
+    // caso contrário, faz o mesmo pra subárvore direita
+    else{ return auxInsert(&((*current)->right), new); }
 }
 
-int bst_insert(bst *t, item movie){
+int bst_insert(bst *t, item word){
     node *newNode = (node *)malloc(sizeof(node)); // aloca um novo nó
 
     // checa se a árvore existe e se a alocação
@@ -87,25 +93,20 @@ int bst_insert(bst *t, item movie){
     }
 
     // ajusta as informações do novo nó
-    newNode->movie = movie;
+    newNode->word = word;
     newNode->left = NULL;
     newNode->right = NULL;
 
     // caso a árvore esteja vazia
     if(t->root == NULL){
         t->root = newNode; // insere o nó na raiz
-        // e a altura permanece em 0
-        return 1;
+        return Success;
     }
 
     // caso não esteja vazia:
 
-    int height = -1; // variável que será usada para calcular a altura na auxInsert
-    int output = auxInsert(&(t->root), newNode, &height); // insere o nó na posição correta e calcula a altura
-
+    int output = auxInsert(&(t->root), newNode); // insere o nó na posição correta
     if(output == Error){ free(newNode); } // Caso a árvore já possua aquele item, desaloca o newNode (evitar memory leak)
-
-    t->height += (t->height < height) ? 1 : 0; // ajusta a altura da árvore com base no valor calculado
 
     return output;
 }
@@ -132,16 +133,16 @@ node *popLowest(node **current){
 
 // função interna que procura o nó a ser removido (com chave key)
 // na subárvore com raiz *current
-int auxRemove(node **current, int key){
+int auxRemove(node **current, char *key){
     // caso chegue-se a um nó nulo, significa que o nó a ser removido não está na árvore
     if(*current == NULL){ return Error; } 
 
     // caso a chave procurada seja menor do que a do nó atual, ela está na subárvore esquerda
     // então recursivamente a procura nessa subárvore
-    else if(key < (*current)->movie.key){ return auxRemove(&((*current)->left), key); }
+    else if(strcmp((*current)->word.string, key) > 0){ return auxRemove(&((*current)->left), key); }
 
     // caso seja maior, subárvore direita
-    else if(key > (*current)->movie.key){ return auxRemove(&((*current)->right), key); }
+    else if(strcmp((*current)->word.string, key) < 0){ return auxRemove(&((*current)->right), key); }
 
     // caso seja igual, o nó a ser removido foi encontrado
     else{
@@ -170,8 +171,28 @@ int auxRemove(node **current, int key){
         if(*current != right){ (*current)->right = right; }
         if(*current != left){ (*current)->left = left; }
 
-        return 1;
+        return Success;
     }
+}
+
+int bst_remove(bst *t, char *key){
+    return (t != NULL) ? auxRemove(&(t->root), key) : Error;
+}
+
+// função interna para recursivamente buscar o nó com chave key
+// na subárvore com raiz current
+item auxSearch(node *current, char *key){
+    return (current == NULL) // se chegar num nó nulo, significa que a chave buscada não está na árvore
+        ? ErrorItem // nesse caso, retorna um erro
+        : (strcmp(current->word.string, key) == 0) // caso contrário, verifica se o nó atual possui a chave buscada
+            ? current->word // se sim, retorna o item neste nó
+            : (strmp(current->word.string, key) > 0) // se não, verifica em qual subárvore (esquerda ou direita) a chave deve está
+                ? auxSearch(current->left, key) // e recursivamente busca ela
+                : auxSearch(current->right, key);
+}
+
+item bst_search(bst *t, char *key){
+    return (t != NULL) ? auxSearch(t->root, key) : ErrorItem;
 }
 
 // função interna para calcular a altura da (sub)árvore de raiz root com bruteforce
@@ -187,40 +208,15 @@ int auxHeight(node *root){
     return (left > right ? left : right) + 1;
 }
 
-int bst_remove(bst *t, int key){
-    if(t == NULL || t->height == 0){ return Error; } // verifica se a árvore existe e não está vazia
-
-    int output = auxRemove(&(t->root), key); // remove o nó desejado
-    t->height = (output != Error) ? (auxHeight(t->root) - 1) : t->height; // ajusta a altura da árvore caso necessário
-
-    return output;
-}
-
-// função interna para recursivamente buscar o nó com chave key
-// na subárvore com raiz current
-char *auxSearch(node *current, int key){
-    return (current == NULL) // se chegar num nó nulo, significa que a chave buscada não está na árvore
-        ? ErrorStr // nesse caso, retorna um erro
-        : (key == current->movie.key) // caso contrário, verifica se o nó atual possui a chave buscada
-            ? current->movie.title // se sim, retorna o título do item neste nó
-            : (key < current->movie.key) // se não, verifica em qual subárvore (esquerda ou direita) a chave deve está
-                ? auxSearch(current->left, key) // e recursivamente busca ela
-                : auxSearch(current->right, key);
-}
-
-char *bst_search(bst *t, int key){
-    return (t != NULL) ? auxSearch(t->root, key) : ErrorStr;
-}
-
 int bst_getHeight(bst *t){
-    return (t != NULL) ? t->height : Error; // caso a árvore exista, retorna sua altura
+    return (t != NULL) ? auxHeight(t->root) - 1 : Error; // caso a árvore exista, retorna sua altura
 }
 
 // recursivamente printa em ordem a subárvore com raiz *current
 void auxPrint(node *current){
     if(current != NULL){
         auxPrint(current->left);
-        printf("%d %s\n", current->movie.key, current->movie.title);
+        printf("%s %d\n", current->word.string, current->word.occurrences);
         auxPrint(current->right);
     }
 
@@ -228,7 +224,7 @@ void auxPrint(node *current){
 }
 
 void bst_print(bst *t){
-    if (t == NULL){ printf("%d\n", Error); }
-    else if(t->height > 0){ auxPrint(t->root); } // printa a árvore toda em ordem, caso ela não esteja vazia
+    (t != NULL) ? auxPrint(t->root) : printf("%d\n", Error);
+    
     return;
 }

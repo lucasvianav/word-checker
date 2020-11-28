@@ -2,11 +2,12 @@
     Daniel Carvalho Dantas 10685702
     Lucas Viana Vilela 10748409
 */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "bst.h"
-#include "utils.h"
+#include "ADTs/bst.h"
+#include "Util/util.h"
 
 #define MAX_INPUT_SIZE 800
 

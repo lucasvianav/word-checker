@@ -1,15 +1,14 @@
-#ifndef ABB_H
-#define ABB_H
+/*
+    Daniel Carvalho Dantas 10685702
+    Lucas Viana Vilela 10748409
+*/
 
-#define Error -32000
-#define ErrorStr "-32000" // código de erro em forma de string
+#ifndef BST_H
+#define BST_H
+
+#include "../Util/util.h"
 
 typedef struct bst_ bst; // Binary Search Tree
-
-typedef struct item_ {
-    int key;
-    char title[20];
-} item;
 
 // Retorna o ponteiro para a BST criada
 bst *bst_new();
@@ -20,11 +19,11 @@ int bst_delete(bst **t);
 
 // Recebe o item a ser inserido e o ponteiro para a BST
 // Retorna 1 se a inserção for bem-sucedida ou Error caso contrário
-int bst_insert(bst *t, item movie);
+int bst_insert(bst *t, item word);
 
 // Recebe a chave do item a ser removido e o ponteiro para a BST
 // Retorna 1 se a inserção for bem-sucedida ou Error caso contraŕio
-int bst_remove(bst *t, int key);
+int bst_remove(bst *t, char *key);
 
 // Recebe o ponteiro para a BST
 // Retorna a altura da BST ou Error caso ela não exista
@@ -33,7 +32,7 @@ int bst_getHeight(bst *t);
 // Recebe a chave do item a ser buscado e o ponteiro para a BST
 // Retorna o título do item encontrado ou Error caso ele não seja
 // encontrado
-char *bst_search(bst *t, int key);
+item bst_search(bst *t, char *key);
 
 // Recebem o ponteiro para a BST
 // Printa todos os itens da BST em ordem
