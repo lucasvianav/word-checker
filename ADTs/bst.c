@@ -186,7 +186,7 @@ item auxSearch(node *current, char *key){
         ? ErrorItem // nesse caso, retorna um erro
         : (strcmp(current->word.string, key) == 0) // caso contrário, verifica se o nó atual possui a chave buscada
             ? current->word // se sim, retorna o item neste nó
-            : (strmp(current->word.string, key) > 0) // se não, verifica em qual subárvore (esquerda ou direita) a chave deve está
+            : (strcmp(current->word.string, key) > 0) // se não, verifica em qual subárvore (esquerda ou direita) a chave deve está
                 ? auxSearch(current->left, key) // e recursivamente busca ela
                 : auxSearch(current->right, key);
 }
