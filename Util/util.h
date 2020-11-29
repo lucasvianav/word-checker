@@ -20,5 +20,5 @@ typedef struct item_ {
 
 // Removes the end of the input
 void removeHashtag(char* string);
-
+ 
 #endif
