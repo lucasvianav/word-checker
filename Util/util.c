@@ -7,7 +7,6 @@
 #include <stdlib.h> 
 #include <string.h>
 #include "util.h"
-#include "../ADTs/bst.h"
 
 void removeHashtag(char *string){
     int i = 0;
@@ -15,11 +14,4 @@ void removeHashtag(char *string){
     string[i] = '\0';
 
     return;
-}
-
-int getNewDictId(bst **dictionaries){
-    if(dictionaries == NULL){ return Error; }
-    for(int i = 0; i < MAX_DICTIONARIES; i++){ if(dictionaries[i] == NULL){ return i; } }
-
-    return Error;
 }

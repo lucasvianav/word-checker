@@ -11,6 +11,11 @@
 
 #define MAX_INPUT_SIZE 800
 
+int getNewDictId(bst **dictionaries){
+    if(dictionaries != NULL){ for(int i = 0; i < MAX_DICTIONARIES; i++){ if(dictionaries[i] == NULL){ return i; } } }
+    return Error;
+}
+
 int main(){
 
     /*
