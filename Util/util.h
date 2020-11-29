@@ -18,7 +18,10 @@ typedef struct item_ {
     int occurrences;
 } item;
 
-// Removes the end of the input
-void removeHashtag(char* string);
+// Remove a # do final do input
+void remove_hashtag(char* string);
+
+// Insere as palavras em um novo dicionário
+//void insert_words(bst* dictionary);
  
 #endif
