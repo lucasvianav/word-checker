@@ -71,7 +71,10 @@ int auxInsert(node **current, node *new){
     // caso contrário:
 
     // se a palavra do nó atual for igual ao do novo nó
-    if(strcmp((*current)->word.string, new->word.string) == 0){ return Error; }
+    if(strcmp((*current)->word.string, new->word.string) == 0){ 
+        (*current)->word.occurrences += 1;
+        return Error;
+    }
 
     // se a palavra do nó atual alfabeticamente viria depois da do novo nó
     else if(strcmp((*current)->word.string, new->word.string) > 0){
@@ -105,10 +108,10 @@ int bst_insert(bst *t, item word){
 
     // caso não esteja vazia:
 
-    int output = auxInsert(&(t->root), newNode); // insere o nó na posição correta
-    if(output == Error){ free(newNode); } // Caso a árvore já possua aquele item, desaloca o newNode (evitar memory leak)
+    int result = auxInsert(&(t->root), newNode); // insere o nó na posição correta
+    if(result == Error){ free(newNode); } // Caso a árvore já possua aquele item, desaloca o newNode (evitar memory leak)
 
-    return output;
+    return Success;
 }
 
 // função interna que vai remover o nó cujo item possui a menor chave
