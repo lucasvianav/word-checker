@@ -58,8 +58,7 @@ void update_words(bst** dictionary, int id){
             // Palavra não existe na árvore
             if(strcmp(search_item.string,ErrorStr) == 0){
                 
-                item new_item = {current_word,1};
-                bst_insert(dictionary[id],new_item);
+                bst_insert(dictionary[id],current_word);
                 
                 printf("%s INSERIDA EM %d\n",current_word,id + 1);
             }
@@ -81,9 +80,7 @@ void insert_words(bst** dictionary, int id){
 
         if(current_word[0] == '#') return; // Sai da função quando encontra o #
 
-        item current_item = {current_word,1};
-
-        bst_insert(dictionary[id],current_item);
+        bst_insert(dictionary[id],current_word);
     }
 
     free(current_word);
@@ -191,6 +188,8 @@ int main(){
 
         }
     }
+
+    bst_print(dicts[0]);
 
     // Desaloca os dicionários
     for(i = 0; i < 3; i++){
