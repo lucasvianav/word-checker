@@ -7,6 +7,7 @@
 #define BST_H
 
 #include "../Util/util.h"
+#include "./avl.h"
 
 typedef struct bst_ bst; // Binary Search Tree
 
@@ -37,5 +38,12 @@ item bst_search(bst *t, char *key);
 // Recebem o ponteiro para a BST
 // Printa todos os itens da BST em ordem
 void bst_print(bst *t);
+
+// Recebe uma bst, uma avl e um inteiro (por referência) que vai representar
+// o tamanho do array que retorna
+// vai percorrer a bst em ordem e checar se cada elemento está contido na avl.
+// todos os elementos que estiverem contidos na avl, serão removidos da bst
+// e armazenados em um array de item, que será retornado pela função
+item *bst_checkAgaisntAVL(bst *BST, avl *AVL, int *arraySize);
 
 #endif
