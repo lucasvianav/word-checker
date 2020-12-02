@@ -10,7 +10,7 @@
 
 #define MAX_INPUT_SIZE 800
 
-/*  Criação da árvore de input
+//  Criação da árvore de input
 
 void create_input_tree(bst* input_tree,char* input){
 
@@ -18,12 +18,11 @@ void create_input_tree(bst* input_tree,char* input){
 
     while(token != NULL){
 
-        item new_item = {token,1};
-        bst_insert(input_tree,new_item);   
+        bst_insert(input_tree,token);   
         token = strtok(NULL," ");               
         }
 }
-*/
+
 
 // Atualiza as palavras do dicionário
 void update_words(bst** dictionary, int id){
