@@ -7,11 +7,11 @@
 
 int main(){
 
-
-    char nome[20];
-
-    while(scanf("%s",nome)){
-        printf("NOME INSERIDO\n");
+    int n;
+    float f;
+    printf("Please enter an integer: ");
+    while(scanf("%f",&f)!=1 || (int)f != f){
+        printf("oi\n");
     }
 
 
