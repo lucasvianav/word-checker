@@ -228,7 +228,7 @@ int bst_getHeight(bst *t){
 void bst_auxPrint(node *current){
     if(current != NULL){
         bst_auxPrint(current->left);
-        printf("%s %d\n", current->word.string, current->word.occurrences);
+        printf("%s\n", current->word.string);
         bst_auxPrint(current->right);
     }
 
