@@ -26,7 +26,7 @@ void create_input_tree(bst* input_tree,char* input){
 
 
 // Atualiza as palavras do dicionário
-void update_words(bst** dictionary, int id){
+void update_words(avl** dictionary, int id){
     
     char operation_char;
     char* current_word = (char*)malloc(20* sizeof(char));
@@ -40,7 +40,7 @@ void update_words(bst** dictionary, int id){
 
             scanf("%s",current_word);
             
-            int result = bst_remove(dictionary[id],current_word);
+            int result = avl_remove(dictionary[id],current_word);
             
             if(result == 1) {printf("%s EXCLUIDA DE %d\n",current_word,id + 1);}
             
@@ -54,12 +54,12 @@ void update_words(bst** dictionary, int id){
 
             scanf("%s",current_word);
 
-            item search_item = bst_search(dictionary[id],current_word);
+            int search_result = avl_search(dictionary[id],current_word);
             
             // Palavra não existe na árvore
-            if(strcmp(search_item.string,ErrorStr) == 0){
+            if(search_result == Error){
                 
-                bst_insert(dictionary[id],current_word);
+                avl_insert(dictionary[id],current_word);
                 
                 printf("%s INSERIDA EM %d\n",current_word,id + 1);
             }
@@ -73,7 +73,7 @@ void update_words(bst** dictionary, int id){
 }
 
 // Insere novas palavras no dicionário recém-criado
-void insert_words(bst** dictionary, int id){
+void insert_words(avl** dictionary, int id){
     
     int wordLength;
     char *word;
@@ -93,7 +93,7 @@ void insert_words(bst** dictionary, int id){
         }
 
         if(wordLength > 1){ 
-            bst_insert(dictionary[id], word); 
+            avl_insert(dictionary[id], word); 
         }
 
         free(word);
@@ -102,7 +102,7 @@ void insert_words(bst** dictionary, int id){
     }
 }
 
-int get_new_dict_id(bst **dictionaries){
+int get_new_dict_id(avl **dictionaries){
     if(dictionaries != NULL){ for(int i = 0; i < MAX_DICTIONARIES; i++){ if(dictionaries[i] == NULL){ return i; } } }
     return Error;
 }
@@ -116,8 +116,8 @@ int main(){
     int num_dictionaries = 0;
 
     // Aloca espaço para 3 dicionários
-    bst** dicts;
-    dicts = (bst**)malloc(3 * sizeof(bst*));
+    avl** dicts;
+    dicts = (avl**)malloc(3 * sizeof(avl*));
 
     while(operation != 0){
 
@@ -140,7 +140,7 @@ int main(){
 
             // Aloca na memória um novo e encontra seu id caso seja possível um novo dicionário
             current_dictionary =  get_new_dict_id(dicts);
-            dicts[current_dictionary] = bst_new(); 
+            dicts[current_dictionary] = avl_new(); 
             
             insert_words(dicts,current_dictionary);
 
@@ -177,7 +177,7 @@ int main(){
 
             // Quando diferente de NULL
             else{
-                bst_delete(&dicts[current_dictionary - 1]);
+                avl_delete(&dicts[current_dictionary - 1]);
                 printf("DICIONARIO %d APAGADO\n",current_dictionary);
                 num_dictionaries--;
             }
@@ -193,7 +193,8 @@ int main(){
             fgets(input,MAX_INPUT_SIZE,stdin);
             remove_hashtag(input);
 
-            //bst* input_tree  = bst_new();
+            bst* input_tree  = bst_new();
+            create_input_tree(input_tree,input);
             break;
 
             default:
@@ -201,6 +202,8 @@ int main(){
 
         }
     }
+
+    //avl_print(dicts[0]);
 
     // Desaloca os dicionários
     for(i = 0; i < 3; i++){
