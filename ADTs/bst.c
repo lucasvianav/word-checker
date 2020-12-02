@@ -85,7 +85,7 @@ int bst_auxInsert(node **current, node *new){
     else{ return bst_auxInsert(&((*current)->right), new); }
 }
 
-int bst_insert(bst *t, item word){
+int bst_insert(bst *t, char *word){
     node *newNode = (node *)malloc(sizeof(node)); // aloca um novo nó
 
     // checa se a árvore existe e se a alocação
@@ -96,7 +96,7 @@ int bst_insert(bst *t, item word){
     }
 
     // ajusta as informações do novo nó
-    newNode->word = word;
+    newNode->word = (item) {word, 1};
     newNode->left = NULL;
     newNode->right = NULL;
 

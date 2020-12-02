@@ -19,7 +19,7 @@ int bst_delete(bst **t);
 
 // Recebe o item a ser inserido e o ponteiro para a BST
 // Retorna 1 se a inserção for bem-sucedida ou Error caso contrário
-int bst_insert(bst *t, item word);
+int bst_insert(bst *t, char *word);
 
 // Recebe a chave do item a ser removido e o ponteiro para a BST
 // Retorna 1 se a inserção for bem-sucedida ou Error caso contraŕio
