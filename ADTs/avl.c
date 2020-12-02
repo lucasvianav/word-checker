@@ -34,10 +34,10 @@ avl *avl_new(){
 
 // essa e todas as outras funções 'aux' (auxiliar) são internas
 // desaloca todos os nós da subárvore com *current como raiz
-void auxDelete(node **current){
+void avl_auxDelete(node **current){
     if(*current != NULL){ // garante que só vai percorrer os nós até encontrar uma folha
-        auxDelete(&((*current)->left)); // recursivamente deleta a subárvore à esquerda desse nó
-        auxDelete(&((*current)->right)); // ||              ||  ||    ||    ||  direita   ||  ||
+        avl_auxDelete(&((*current)->left)); // recursivamente deleta a subárvore à esquerda desse nó
+        avl_auxDelete(&((*current)->right)); // ||              ||  ||    ||    ||  direita   ||  ||
 
         // após desalocar as subárvores esquerda e direita, faz o mesmo pra raiz
         // (percurso pós-ordem)
@@ -52,7 +52,7 @@ void auxDelete(node **current){
 int avl_delete(avl **t){
     if(*t == NULL){ return Error; } // verifica se a AVL existe
 
-    auxDelete(&((*t)->root)); // desaloca todos os nós da lista
+    avl_auxDelete(&((*t)->root)); // desaloca todos os nós da lista
 
     free(*t); // desaloca a árvore
     *t = NULL;
@@ -107,7 +107,7 @@ node *counterClockwiseRotation(node *n){
 // vai incrementar height para cada nível que descer na árvore
 // no total, vai somar comprimento do percurso feito + 1 ao valor
 // inicial de height
-int auxInsert(node **current, node *new){
+int avl_auxInsert(node **current, node *new){
     if(*current == NULL){ // caso base --> a posição correta para o novo nó foi encontrada
         *current = new; // insere na posição
         return Success;
@@ -121,7 +121,7 @@ int auxInsert(node **current, node *new){
     // se a palavra do nó atual alfabeticamente viria depois da do novo nó
     // recursivamente procura a posição para inserir na subárvore esquerda
     // caso contrário, faz o mesmo pra subárvore direita
-    int output = auxInsert( (strcmp((*current)->word, new->word) > 0) ? &((*current)->left) : &((*current)->right), new );
+    int output = avl_auxInsert( (strcmp((*current)->word, new->word) > 0) ? &((*current)->left) : &((*current)->right), new );
 
     // se a inserção tiver sido bem-sucedida
     if(output == Success){
@@ -178,7 +178,7 @@ int avl_insert(avl *t, char *word){
 
     // caso não esteja vazia:
 
-    int output = auxInsert(&(t->root), newNode); // insere o nó na posição correta
+    int output = avl_auxInsert(&(t->root), newNode); // insere o nó na posição correta
     if(output == Error){ free(newNode); } // Caso a árvore já possua aquele item, desaloca o newNode (evitar memory leak)
 
     return output;
@@ -186,7 +186,7 @@ int avl_insert(avl *t, char *word){
 
 // função interna que vai remover o nó cujo char *possui a menor chave
 // da subárvore com raiz *current e retornar esse nó
-node *popLowest(node **current){
+node *avl_popLowest(node **current){
     // caso o nó atual seja o mais à esquerda dessa subárvore (menor chave)
     if((*current)->left == NULL){
         return *current; // retorna o nó de menor chave
@@ -201,12 +201,12 @@ node *popLowest(node **current){
         return tmp; // retorna o nó de menor chave
     }
 
-    return popLowest(&((*current)->left)); // recursivamente procura pelo nó de menor chave
+    return avl_popLowest(&((*current)->left)); // recursivamente procura pelo nó de menor chave
 }
 
 // função interna que procura o nó a ser removido (com chave key)
 // na subárvore com raiz *current
-int auxRemove(node **current, char *key){
+int avl_auxRemove(node **current, char *key){
     // caso chegue-se a um nó nulo, significa que o nó a ser removido não está na árvore
     if(*current == NULL){ return Error; } 
 
@@ -227,7 +227,7 @@ int auxRemove(node **current, char *key){
             ? right // salva a raiz da subárvore à direita na variável temporária
             : (right == NULL) // caso haja uma subárvore esquerda e não haja uma direita
                 ? left // salva a raiz da subárvore à esquerda na variável temporária
-                : popLowest(&((*current)->right)); // e caso subárvores de ambos os lados, dá um pop
+                : avl_popLowest(&((*current)->right)); // e caso subárvores de ambos os lados, dá um pop
                                                    // no nó mais à esquerda da subárvore à direita para a tmp
 
         free(*current); // desaloca o nó atual (removendo-o)
@@ -244,7 +244,7 @@ int auxRemove(node **current, char *key){
 
     // caso a chave procurada seja menor do que a do nó atual, ela está na subárvore esquerda
     // caso seja maior, subárvore direita. recursivamente procura na subárvore adequada
-    int output = auxRemove((strcmp((*current)->word, key) > 0) ? &((*current)->left) : &((*current)->right), key);
+    int output = avl_auxRemove((strcmp((*current)->word, key) > 0) ? &((*current)->left) : &((*current)->right), key);
 
     // se a remoção tiver sido bem-sucedida
     if(output == Success){
@@ -278,23 +278,23 @@ int auxRemove(node **current, char *key){
 }
 
 int avl_remove(avl *t, char *key){
-    return (t != NULL) ? auxRemove(&(t->root), key) : Error;
+    return (t != NULL) ? avl_auxRemove(&(t->root), key) : Error;
 }
 
 // função interna para recursivamente buscar o nó com chave key
 // na subárvore com raiz current
-int auxSearch(node *current, char *key){
+int avl_auxSearch(node *current, char *key){
     return (current == NULL) // se chegar num nó nulo, significa que a chave buscada não está na árvore
         ? Error // nesse caso, retorna um erro
         : (strcmp(current->word, key) == 0) // caso contrário, verifica se o nó atual possui a chave buscada
             ? current->height // se sim, retorna a altura deste nó
             : (strcmp(current->word, key) > 0) // se não, verifica em qual subárvore (esquerda ou direita) a chave deve está
-                ? auxSearch(current->left, key) // e recursivamente busca ela
-                : auxSearch(current->right, key);
+                ? avl_auxSearch(current->left, key) // e recursivamente busca ela
+                : avl_auxSearch(current->right, key);
 }
 
 int avl_search(avl *t, char *key){
-    return (t != NULL) ? auxSearch(t->root, key) : Error;
+    return (t != NULL) ? avl_auxSearch(t->root, key) : Error;
 }
 
 int avl_getHeight(avl *t){
@@ -302,18 +302,18 @@ int avl_getHeight(avl *t){
 }
 
 // recursivamente printa em ordem a subárvore com raiz *current
-void auxPrint(node *current){
+void avl_auxPrint(node *current){
     if(current != NULL){
         printf("%s %d\n", current->word, current->height);
-        auxPrint(current->left);
-        auxPrint(current->right);
+        avl_auxPrint(current->left);
+        avl_auxPrint(current->right);
     }
 
     return;
 }
 
 void avl_print(avl *t){
-    (t != NULL) ? auxPrint(t->root) : printf("%d\n", Error);
+    (t != NULL) ? avl_auxPrint(t->root) : printf("%d\n", Error);
     
     return;
 }

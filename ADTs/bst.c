@@ -31,10 +31,10 @@ bst *bst_new(){
 
 // essa e todas as outras funções 'aux' (auxiliar) são internas
 // desaloca todos os nós da subárvore com *current como raiz
-void auxDelete(node **current){
+void bst_auxDelete(node **current){
     if(*current != NULL){ // garante que só vai percorrer os nós até encontrar uma folha
-        auxDelete(&((*current)->left)); // recursivamente deleta a subárvore à esquerda desse nó
-        auxDelete(&((*current)->right)); // ||              ||  ||    ||    ||  direita   ||  ||
+        bst_auxDelete(&((*current)->left)); // recursivamente deleta a subárvore à esquerda desse nó
+        bst_auxDelete(&((*current)->right)); // ||              ||  ||    ||    ||  direita   ||  ||
 
         // após desalocar as subárvores esquerda e direita, faz o mesmo pra raiz
         // (percurso pós-ordem)
@@ -49,7 +49,7 @@ void auxDelete(node **current){
 int bst_delete(bst **t){
     if(*t == NULL){ return Error; } // verifica se a BST existe
 
-    auxDelete(&((*t)->root)); // desaloca todos os nós da lista
+    bst_auxDelete(&((*t)->root)); // desaloca todos os nós da lista
 
     free(*t); // desaloca a árvore
     *t = NULL;
@@ -62,7 +62,7 @@ int bst_delete(bst **t){
 // vai incrementar height para cada nível que descer na árvore
 // no total, vai somar comprimento do percurso feito + 1 ao valor
 // inicial de height
-int auxInsert(node **current, node *new){
+int bst_auxInsert(node **current, node *new){
     if(*current == NULL){ // caso base --> a posição correta para o novo nó foi encontrada
         *current = new; // insere na posição
         return Success;
@@ -78,11 +78,11 @@ int auxInsert(node **current, node *new){
 
     // se a palavra do nó atual alfabeticamente viria depois da do novo nó
     else if(strcmp((*current)->word.string, new->word.string) > 0){
-        return auxInsert(&((*current)->left), new); // recursivamente procura a posição para inserir na subárvore esquerda
+        return bst_auxInsert(&((*current)->left), new); // recursivamente procura a posição para inserir na subárvore esquerda
     }
 
     // caso contrário, faz o mesmo pra subárvore direita
-    else{ return auxInsert(&((*current)->right), new); }
+    else{ return bst_auxInsert(&((*current)->right), new); }
 }
 
 int bst_insert(bst *t, item word){
@@ -108,7 +108,7 @@ int bst_insert(bst *t, item word){
 
     // caso não esteja vazia:
 
-    int result = auxInsert(&(t->root), newNode); // insere o nó na posição correta
+    int result = bst_auxInsert(&(t->root), newNode); // insere o nó na posição correta
     if(result == Error){ free(newNode); } // Caso a árvore já possua aquele item, desaloca o newNode (evitar memory leak)
 
     return Success;
@@ -116,7 +116,7 @@ int bst_insert(bst *t, item word){
 
 // função interna que vai remover o nó cujo item possui a menor chave
 // da subárvore com raiz *current e retornar esse nó
-node *popLowest(node **current){
+node *bst_popLowest(node **current){
     // caso o nó atual seja o mais à esquerda dessa subárvore (menor chave)
     if((*current)->left == NULL){
         return *current; // retorna o nó de menor chave
@@ -131,21 +131,21 @@ node *popLowest(node **current){
         return tmp; // retorna o nó de menor chave
     }
 
-    return popLowest(&((*current)->left)); // recursivamente procura pelo nó de menor chave
+    return bst_popLowest(&((*current)->left)); // recursivamente procura pelo nó de menor chave
 }
 
 // função interna que procura o nó a ser removido (com chave key)
 // na subárvore com raiz *current
-int auxRemove(node **current, char *key){
+int bst_auxRemove(node **current, char *key){
     // caso chegue-se a um nó nulo, significa que o nó a ser removido não está na árvore
     if(*current == NULL){ return Error; } 
 
     // caso a chave procurada seja menor do que a do nó atual, ela está na subárvore esquerda
     // então recursivamente a procura nessa subárvore
-    else if(strcmp((*current)->word.string, key) > 0){ return auxRemove(&((*current)->left), key); }
+    else if(strcmp((*current)->word.string, key) > 0){ return bst_auxRemove(&((*current)->left), key); }
 
     // caso seja maior, subárvore direita
-    else if(strcmp((*current)->word.string, key) < 0){ return auxRemove(&((*current)->right), key); }
+    else if(strcmp((*current)->word.string, key) < 0){ return bst_auxRemove(&((*current)->right), key); }
 
     // caso seja igual, o nó a ser removido foi encontrado
     else{
@@ -164,7 +164,7 @@ int auxRemove(node **current, char *key){
             ? right // salva a raiz da subárvore à direita na variável temporária
             : (right == NULL) // caso haja uma subárvore esquerda e não haja uma direita
                 ? left // salva a raiz da subárvore à esquerda na variável temporária
-                : popLowest(&((*current)->right)); // e caso subárvores de ambos os lados, dá um pop
+                : bst_popLowest(&((*current)->right)); // e caso subárvores de ambos os lados, dá um pop
                                                    // no nó mais à esquerda da subárvore à direita para a tmp
 
         free(*current); // desaloca o nó atual (removendo-o)
@@ -179,55 +179,55 @@ int auxRemove(node **current, char *key){
 }
 
 int bst_remove(bst *t, char *key){
-    return (t != NULL) ? auxRemove(&(t->root), key) : Error;
+    return (t != NULL) ? bst_auxRemove(&(t->root), key) : Error;
 }
 
 // função interna para recursivamente buscar o nó com chave key
 // na subárvore com raiz current
-item auxSearch(node *current, char *key){
+item bst_auxSearch(node *current, char *key){
     return (current == NULL) // se chegar num nó nulo, significa que a chave buscada não está na árvore
         ? ErrorItem // nesse caso, retorna um erro
         : (strcmp(current->word.string, key) == 0) // caso contrário, verifica se o nó atual possui a chave buscada
             ? current->word // se sim, retorna o item neste nó
             : (strcmp(current->word.string, key) > 0) // se não, verifica em qual subárvore (esquerda ou direita) a chave deve está
-                ? auxSearch(current->left, key) // e recursivamente busca ela
-                : auxSearch(current->right, key);
+                ? bst_auxSearch(current->left, key) // e recursivamente busca ela
+                : bst_auxSearch(current->right, key);
 }
 
 item bst_search(bst *t, char *key){
-    return (t != NULL) ? auxSearch(t->root, key) : ErrorItem;
+    return (t != NULL) ? bst_auxSearch(t->root, key) : ErrorItem;
 }
 
 // função interna para calcular a altura da (sub)árvore de raiz root com bruteforce
-int auxHeight(node *root){
+int bst_auxHeight(node *root){
     if(root == NULL){ return 0; } // caso a raiz seja nula, a altura é 0
 
     // recursivamente calcula as alturas das subárvores
     // à esquerda e à direita
-    int left = auxHeight(root->left);
-    int right = auxHeight(root->right);
+    int left = bst_auxHeight(root->left);
+    int right = bst_auxHeight(root->right);
 
     // a altura dessa subárvore vai ser 1 + o máx entre a das subárvores esquerda e direita
     return (left > right ? left : right) + 1;
 }
 
 int bst_getHeight(bst *t){
-    return (t != NULL) ? auxHeight(t->root) - 1 : Error; // caso a árvore exista, retorna sua altura
+    return (t != NULL) ? bst_auxHeight(t->root) - 1 : Error; // caso a árvore exista, retorna sua altura
 }
 
 // recursivamente printa em ordem a subárvore com raiz *current
-void auxPrint(node *current){
+void bst_auxPrint(node *current){
     if(current != NULL){
-        auxPrint(current->left);
+        bst_auxPrint(current->left);
         printf("%s %d\n", current->word.string, current->word.occurrences);
-        auxPrint(current->right);
+        bst_auxPrint(current->right);
     }
 
     return;
 }
 
 void bst_print(bst *t){
-    (t != NULL) ? auxPrint(t->root) : printf("%d\n", Error);
+    (t != NULL) ? bst_auxPrint(t->root) : printf("%d\n", Error);
     
     return;
 }
