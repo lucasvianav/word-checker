@@ -62,10 +62,10 @@ void update_words(bst** dictionary, int id){
                 item new_item = {current_word,1};
                 bst_insert(dictionary[id],new_item);
                 
-                printf("%s INSERIDA EM %d\n",current_word,id);
+                printf("%s INSERIDA EM %d\n",current_word,id + 1);
             }
             else{ // Palavra já existe na árvore
-                printf("%s JA EXISTE EM %d\n",current_word,id);
+                printf("%s JA EXISTE EM %d\n",current_word,id + 1);
             }
         }
     }
