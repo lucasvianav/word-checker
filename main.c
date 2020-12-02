@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ADTs/bst.h"
+#include "ADTs/avl.h"
 #include "Util/util.h"
 
 #define MAX_INPUT_SIZE 800
@@ -74,20 +75,32 @@ void update_words(bst** dictionary, int id){
 // Insere novas palavras no dicionário recém-criado
 void insert_words(bst** dictionary, int id){
     
-    char* current_word = (char*)malloc(20*sizeof(char));
+    int wordLength;
+    char *word;
+    char aux;
+    
+    while(1){
+        wordLength = 0;
+        word = (char *)malloc(sizeof(char));
 
-    while(scanf("%s",current_word)){
+        while(1){
+            scanf("%c", &aux);
 
-        if(current_word[0] == '#') return; // Sai da função quando encontra o #
+            word = (char *)realloc(word, ++wordLength * sizeof(char));
+            word[wordLength-1] = (aux != '\n' && aux != '#' && aux != ' ') ? aux : '\0';
 
-        bst_insert(dictionary[id],current_word);
+            if(aux == '\n' || aux == '#' || aux == ' '){ break; }
+        }
+
+        if(wordLength > 1){ 
+            bst_insert(dictionary[id], word); 
+        }
+
+        free(word);
+        
+        if(aux == '#'){ break; }
     }
-
-    free(current_word);
-
-    return ;
 }
-
 
 int get_new_dict_id(bst **dictionaries){
     if(dictionaries != NULL){ for(int i = 0; i < MAX_DICTIONARIES; i++){ if(dictionaries[i] == NULL){ return i; } } }
@@ -188,8 +201,6 @@ int main(){
 
         }
     }
-
-    bst_print(dicts[0]);
 
     // Desaloca os dicionários
     for(i = 0; i < 3; i++){
