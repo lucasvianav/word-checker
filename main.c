@@ -10,35 +10,55 @@
 
 #define MAX_INPUT_SIZE 800
 
+/*  Criação da árvore de input
+
+void create_input_tree(bst* input_tree,char* input){
+
+    char* token = strtok(input," ");
+
+    while(token != NULL){
+
+        item new_item = {token,1};
+        bst_insert(input_tree,new_item);   
+        token = strtok(NULL," ");               
+        }
+}
+*/
+
 // Atualiza as palavras do dicionário
 void update_words(bst** dictionary, int id){
     
-    char current_word[20];
-    int operation = 0;
+    char operation_char;
+    char* current_word = (char*)malloc(20* sizeof(char));
 
-    while(scanf("%d %s",&operation,current_word)){
+    while(scanf(" %c",&operation_char)){
 
-        if(current_word[0] == '#') return; // FALTA CORRIGIR
+        if(operation_char == '#') return; 
 
         // Remoção
-        if(operation == 0){
+        if(operation_char == '0'){
+
+            scanf("%s",current_word);
             
             int result = bst_remove(dictionary[id],current_word);
             
-            if(result == 1) {printf("%s EXCLUIDA DE %d\n",current_word,id);}
+            if(result == 1) {printf("%s EXCLUIDA DE %d\n",current_word,id + 1);}
             
             else{
-                printf("%s INEXISTENTE EM %d\n",current_word,id);
+                printf("%s INEXISTENTE EM %d\n",current_word,id + 1);
             }
         }
 
         // Inserção
         else{
 
+            scanf("%s",current_word);
+
             item search_item = bst_search(dictionary[id],current_word);
             
             // Palavra não existe na árvore
             if(strcmp(search_item.string,ErrorStr) == 0){
+                
                 item new_item = {current_word,1};
                 bst_insert(dictionary[id],new_item);
                 
@@ -47,15 +67,16 @@ void update_words(bst** dictionary, int id){
             else{ // Palavra já existe na árvore
                 printf("%s JA EXISTE EM %d\n",current_word,id);
             }
-        } 
+        }
     }
+    free(current_word); 
     return ;
 }
 
 // Insere novas palavras no dicionário recém-criado
 void insert_words(bst** dictionary, int id){
     
-    char current_word[20];
+    char* current_word = (char*)malloc(20*sizeof(char));
 
     while(scanf("%s",current_word)){
 
@@ -65,6 +86,8 @@ void insert_words(bst** dictionary, int id){
 
         bst_insert(dictionary[id],current_item);
     }
+
+    free(current_word);
 
     return ;
 }
@@ -112,7 +135,8 @@ int main(){
             
             insert_words(dicts,current_dictionary);
 
-            printf("DICIONARIO %d CRIADO\n",current_dictionary);
+            // Exibe na tela o número corrigido do dicionário (vetor começa em 0)
+            printf("DICIONARIO %d CRIADO\n",current_dictionary + 1);
             num_dictionaries++;
 
             break;
@@ -123,12 +147,12 @@ int main(){
             scanf("%d",&current_dictionary);
 
             // Inexistente
-            if(dicts[current_dictionary] == NULL){
+            if(dicts[current_dictionary - 1] == NULL){
                 printf("DICIONARIO %d INEXISTENTE\n",current_dictionary);
                 break;
             }
 
-            update_words(dicts,current_dictionary);
+            update_words(dicts,current_dictionary - 1);
 
             break;
 
@@ -137,14 +161,14 @@ int main(){
             scanf("%d",&current_dictionary);
 
             // Inexistente
-            if(dicts[current_dictionary] == NULL){
+            if(dicts[current_dictionary - 1] == NULL){
                 printf("DICIONARIO %d INEXISTENTE\n",current_dictionary);
                 break;
             }
 
             // Quando diferente de NULL
             else{
-                bst_delete(&dicts[current_dictionary]);
+                bst_delete(&dicts[current_dictionary - 1]);
                 printf("DICIONARIO %d APAGADO\n",current_dictionary);
                 num_dictionaries--;
             }
