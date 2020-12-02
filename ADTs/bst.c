@@ -241,9 +241,9 @@ void bst_print(bst *t){
     return;
 }
 
-void bst_auxCheck(node *current, avl *AVL, item **array, int *arraySize){
+void bst_auxIntersection(node *current, avl *AVL, item **array, int *arraySize){
     if(current != NULL){
-        bst_auxCheck(current->left, AVL, array, arraySize);
+        bst_auxIntersection(current->left, AVL, array, arraySize);
         
         if(avl_search(AVL, current->word.string) != Error){
             char *word = (char *)malloc((strlen(current->word.string) + 1) * sizeof(char));
@@ -257,19 +257,19 @@ void bst_auxCheck(node *current, avl *AVL, item **array, int *arraySize){
             bst_auxRemove(&current, current->word.string);
         }
 
-        bst_auxCheck(current->right, AVL, array, arraySize);
+        bst_auxIntersection(current->right, AVL, array, arraySize);
     }
 
     return;
 }
 
-item *bst_checkAgaisntAVL(bst *BST, avl *AVL, int *arraySize){
+item *bst_popAvlIntersection(bst *BST, avl *AVL, int *arraySize){
     *arraySize = 0;
     item *array = NULL;
 
     if(BST != NULL && AVL != NULL){
         array = (item *)malloc(sizeof(item));
-        if(array != NULL){ bst_auxCheck(BST->root, AVL, &array, arraySize); }
+        if(array != NULL){ bst_auxIntersection(BST->root, AVL, &array, arraySize); }
     }
 
     return array;

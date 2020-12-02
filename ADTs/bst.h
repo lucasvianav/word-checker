@@ -44,6 +44,6 @@ void bst_print(bst *t);
 // vai percorrer a bst em ordem e checar se cada elemento está contido na avl.
 // todos os elementos que estiverem contidos na avl, serão removidos da bst
 // e armazenados em um array de item, que será retornado pela função
-item *bst_checkAgaisntAVL(bst *BST, avl *AVL, int *arraySize);
+item *bst_popAvlIntersection(bst *BST, avl *AVL, int *arraySize);
 
 #endif
