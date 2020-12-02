@@ -42,6 +42,7 @@ void avl_auxDelete(node **current){
         // após desalocar as subárvores esquerda e direita, faz o mesmo pra raiz
         // (percurso pós-ordem)
 
+        free((*current)->word);
         free(*current); // desaloca o nó-raiz
         *current = NULL;
     }
@@ -156,16 +157,20 @@ int avl_auxInsert(node **current, node *new){
 
 int avl_insert(avl *t, char *word){
     node *newNode = (node *)malloc(sizeof(node)); // aloca um novo nó
+    char *newWord = (char *)malloc((strlen(word) + 1) * sizeof(char));
 
     // checa se a árvore existe e se a alocação
     // do novo nó foi bem-sucedida
-    if(t == NULL || newNode == NULL){ 
+    if(t == NULL || newNode == NULL || newWord == NULL){ 
         if(newNode != NULL){ free(newNode); }
+        if(newWord != NULL){ free(newWord); }
         return Error; 
     }
 
+    strcpy(newWord, word);
+
     // ajusta as informações do novo nó
-    newNode->word = word;
+    newNode->word = newWord;
     newNode->height = 0;
     newNode->left = NULL;
     newNode->right = NULL;
@@ -179,7 +184,10 @@ int avl_insert(avl *t, char *word){
     // caso não esteja vazia:
 
     int output = avl_auxInsert(&(t->root), newNode); // insere o nó na posição correta
-    if(output == Error){ free(newNode); } // Caso a árvore já possua aquele item, desaloca o newNode (evitar memory leak)
+    if(output == Error){  // Caso a árvore já possua aquele item, desaloca o newNode (evitar memory leak)
+        free(newNode->word);
+        free(newNode); 
+    }
 
     return output;
 }
@@ -230,6 +238,7 @@ int avl_auxRemove(node **current, char *key){
                 : avl_popLowest(&((*current)->right)); // e caso subárvores de ambos os lados, dá um pop
                                                    // no nó mais à esquerda da subárvore à direita para a tmp
 
+        free((*current)->word);
         free(*current); // desaloca o nó atual (removendo-o)
         *current = tmp; // e coloca o nó salvo na variável temporária em seu lugar
 

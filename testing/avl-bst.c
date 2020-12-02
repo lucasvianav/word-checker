@@ -16,14 +16,14 @@ int main(){
     avl_insert(tree, "13");
     avl_insert(tree, "19");
 
-    bst_insert(bin, (item) {"11", 1});
-    bst_insert(bin, (item) {"09", 1});
-    bst_insert(bin, (item) {"14", 1});
-    bst_insert(bin, (item) {"10", 1});
-    bst_insert(bin, (item) {"12", 1});
-    bst_insert(bin, (item) {"15", 1});
-    bst_insert(bin, (item) {"13", 1});
-    bst_insert(bin, (item) {"19", 1});
+    bst_insert(bin, "11");
+    bst_insert(bin, "09");
+    bst_insert(bin, "14");
+    bst_insert(bin, "10");
+    bst_insert(bin, "12");
+    bst_insert(bin, "15");
+    bst_insert(bin, "13");
+    bst_insert(bin, "19");
 
     avl_print(tree);
     bst_print(bin);
