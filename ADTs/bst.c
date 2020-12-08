@@ -229,6 +229,7 @@ void bst_auxPrint(node *current){
     if(current != NULL){
         bst_auxPrint(current->left);
         printf("%s\n", current->word.string);
+        // printf("%s %d\n", current->word.string, current->word.occurrences);
         bst_auxPrint(current->right);
     }
 

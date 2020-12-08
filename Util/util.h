@@ -21,7 +21,7 @@ typedef struct item_ {
 // Remove a # do final do input
 void remove_hashtag(char* string);
 
-// Insere as palavras em um novo dicionário
-//void insert_words(bst* dictionary);
+// Merge sorts the vector by item.occurrences (higher to lower)
+void sort(item *vector, int vectorSize);
  
 #endif
