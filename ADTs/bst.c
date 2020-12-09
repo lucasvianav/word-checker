@@ -161,6 +161,7 @@ int bst_auxRemove(node **current, char *key){
     else{
         // caso o nó seja uma folha, basta removê-lo
         if((*current)->left == NULL && (*current)->right == NULL){  
+            free((*current)->word.string);
             free(*current); // desaloca ele
             *current = NULL;
             return 1;
@@ -257,9 +258,9 @@ void bst_auxIntersection(node **current, avl *AVL, item **array, int *arraySize)
 
             *array = (item *)realloc(*array, ++(*arraySize) * sizeof(item));
             (*array)[*arraySize - 1] = (item) {word, (*current)->word.occurrences};
+            word = NULL;
 
             bst_auxRemove(current, (*current)->word.string);
-        
             bst_auxIntersection(current, AVL, array, arraySize);
         }
 
