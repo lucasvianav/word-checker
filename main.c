@@ -175,7 +175,7 @@ int main(){
             // Exibe na tela o número corrigido do dicionário (vetor começa em 0)
             printf("DICIONARIO %d CRIADO\n",current_dictionary + 1);
             num_dictionaries++;
-
+        
             break;
 
             // Atualizar
@@ -222,25 +222,21 @@ int main(){
             // Cria a árvore do input
             bst* input_tree  = bst_new();
             create_input_tree(input_tree,input);
+            
+            printf("Árvore antes:\n");
+            bst_print(input_tree);
 
             int tamanho_arvore;
 
             // Em um array de itens, insere aquilo que
             item *intersection = bst_popAvlIntersection(input_tree,dicts[current_dictionary - 1],&tamanho_arvore);
             
+            printf("Árvore depois:\n");
             bst_print(input_tree);
 
-            /* 
-            printf("Antes do sort:\n");
-            for(i = 0; i < tamanho_arvore; i++){ 
-                printf("%s %d\n", intersection[i].string, intersection[i].occurrences); 
-            }*/
-            
-
             sort(intersection,tamanho_arvore);
-            
-            //printf("Depois do sort:\n");
-            for(i = 0; i < n_frequent_words; i++){ 
+
+            for(i = 0; i < tamanho_arvore; i++){ 
                 printf("%s %d\n", intersection[i].string, intersection[i].occurrences); 
             }
 
@@ -251,6 +247,7 @@ int main(){
 
         }
     }
+
 
     // Desaloca os dicionários
     for(i = 0; i < 3; i++){
