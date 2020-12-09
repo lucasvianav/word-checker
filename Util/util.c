@@ -32,7 +32,7 @@ void mergeSubvectors(item *vector, int firstLeftIndex, int firstRightIndex, int 
         // If there are still elements in both subvector
         if(i <= firstRightIndex && j <= secondRightIndex){ 
             // Compares them and copies the lowest one to tmp
-            if(vector[i].occurrences > vector[j].occurrences){ tmp[k] = vector[i++]; }
+            if(vector[i].occurrences >= vector[j].occurrences){ tmp[k] = vector[i++]; }
             else{ tmp[k] = vector[j++]; }
         }
 
