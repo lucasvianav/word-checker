@@ -256,9 +256,11 @@ void bst_auxIntersection(node *current, avl *AVL, item **array, int *arraySize){
             (*array)[*arraySize - 1] = (item) {word, current->word.occurrences};
 
             bst_auxRemove(&current, current->word.string);
+        
+            bst_auxIntersection(current, AVL, array, arraySize);
         }
 
-        bst_auxIntersection(current->right, AVL, array, arraySize);
+        else{ bst_auxIntersection(current->right, AVL, array, arraySize); }
     }
 
     return;
