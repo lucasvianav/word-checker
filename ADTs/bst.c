@@ -115,8 +115,10 @@ int bst_insert(bst *t, char *word){
 
     int result = bst_auxInsert(&(t->root), newNode); // insere o nó na posição correta
     if(result == Error){  // Caso a árvore já possua aquele item, desaloca o newNode (evitar memory leak)
-        free(newNode->word.string);
         free(newNode); 
+        free(newWord);
+        newWord = NULL;
+        newNode = NULL;
     }
 
     return Success;
@@ -178,6 +180,7 @@ int bst_auxRemove(node **current, char *key){
         free((*current)->word.string);
         free(*current); // desaloca o nó atual (removendo-o)
         *current = tmp; // e coloca o nó salvo na variável temporária em seu lugar
+        tmp = NULL;
 
         // refaz as ligações
         if(*current != right){ (*current)->right = right; }
@@ -242,25 +245,25 @@ void bst_print(bst *t){
     return;
 }
 
-void bst_auxIntersection(node *current, avl *AVL, item **array, int *arraySize){
-    if(current != NULL){
-        bst_auxIntersection(current->left, AVL, array, arraySize);
+void bst_auxIntersection(node **current, avl *AVL, item **array, int *arraySize){
+    if(*current != NULL){
+        bst_auxIntersection(&((*current)->left), AVL, array, arraySize);
         
-        if(avl_search(AVL, current->word.string) != Error){
-            char *word = (char *)malloc((strlen(current->word.string) + 1) * sizeof(char));
+        if(avl_search(AVL, (*current)->word.string) != Error){
+            char *word = (char *)malloc((strlen((*current)->word.string) + 1) * sizeof(char));
             if(word == NULL){ return; }
 
-            strcpy(word, current->word.string);
+            strcpy(word, (*current)->word.string);
 
             *array = (item *)realloc(*array, ++(*arraySize) * sizeof(item));
-            (*array)[*arraySize - 1] = (item) {word, current->word.occurrences};
+            (*array)[*arraySize - 1] = (item) {word, (*current)->word.occurrences};
 
-            bst_auxRemove(&current, current->word.string);
+            bst_auxRemove(current, (*current)->word.string);
         
             bst_auxIntersection(current, AVL, array, arraySize);
         }
 
-        else{ bst_auxIntersection(current->right, AVL, array, arraySize); }
+        else{ bst_auxIntersection(&((*current)->right), AVL, array, arraySize); }
     }
 
     return;
@@ -272,7 +275,7 @@ item *bst_popAvlIntersection(bst *BST, avl *AVL, int *arraySize){
 
     if(BST != NULL && AVL != NULL){
         array = (item *)malloc(sizeof(item));
-        if(array != NULL){ bst_auxIntersection(BST->root, AVL, &array, arraySize); }
+        if(array != NULL){ bst_auxIntersection(&(BST->root), AVL, &array, arraySize); }
     }
 
     return array;

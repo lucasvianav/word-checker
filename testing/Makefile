@@ -22,3 +22,7 @@ mergeTest-main:
 	gcc -g3 -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer -Werror -Wall -std=c99 merge-sort.c ../ADTs/avl.c ../ADTs/avl.h ../ADTs/bst.c ../ADTs/bst.h ../Util/util.c ../Util/util.h -o merge-sort
 mergeTest-run:
 	./merge-sort
+bstRemoving-main:
+	gcc -g3 -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer -Werror -Wall -std=c99 bst-removing.c ../ADTs/avl.c ../ADTs/avl.h ../ADTs/bst.c ../ADTs/bst.h ../Util/util.c ../Util/util.h -o bst-removing
+bstRemoving-run:
+	./bst-removing
