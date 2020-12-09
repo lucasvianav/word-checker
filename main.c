@@ -13,6 +13,33 @@
 
 //  Criação da árvore de input
 
+void read_input(char* input){
+
+    int i = 0;
+    char aux;
+
+    // Ignora caracteres iniciais que possam ter valores indesejáveis
+    while(scanf("%c",&aux)){
+        if((aux != '\n') && (aux != '\r')){ break; }
+    }
+    
+    // Inicia com o valor certo
+    input[i] = aux;
+    i++;
+
+    // Realiza o scan de todos os caracteres
+    while(scanf("%c",&aux)){
+        if(aux == '#'){
+            input[i] = '\0';
+            break;
+        }   
+
+        input[i] = aux;
+        i++;
+    }
+    return ;
+}
+
 void create_input_tree(bst* input_tree,char* input){
 
     char* token = strtok(input," ");
@@ -114,6 +141,7 @@ int main(){
     int n_frequent_words,current_dictionary;
     int operation = 1;
     int num_dictionaries = 0;
+    char* input = (char*)malloc(MAX_INPUT_SIZE * sizeof(char));
 
     // Aloca espaço para 3 dicionários
     avl** dicts;
@@ -187,14 +215,35 @@ int main(){
             // Verificar
             case 4:
 
+            // Registra os valores de entrada e lê o input
             scanf("%d %d",&current_dictionary,&n_frequent_words);
-            
-            char* input = NULL;
-            fgets(input,MAX_INPUT_SIZE,stdin);
-            remove_hashtag(input);
+            read_input(input);
 
+            // Cria a árvore do input
             bst* input_tree  = bst_new();
             create_input_tree(input_tree,input);
+
+            int tamanho_arvore;
+
+            // Em um array de itens, insere aquilo que
+            item *intersection = bst_popAvlIntersection(input_tree,dicts[current_dictionary - 1],&tamanho_arvore);
+            
+            bst_print(input_tree);
+
+            /* 
+            printf("Antes do sort:\n");
+            for(i = 0; i < tamanho_arvore; i++){ 
+                printf("%s %d\n", intersection[i].string, intersection[i].occurrences); 
+            }*/
+            
+
+            sort(intersection,tamanho_arvore);
+            
+            //printf("Depois do sort:\n");
+            for(i = 0; i < n_frequent_words; i++){ 
+                printf("%s %d\n", intersection[i].string, intersection[i].occurrences); 
+            }
+
             break;
 
             default:
@@ -202,8 +251,6 @@ int main(){
 
         }
     }
-
-    //avl_print(dicts[0]);
 
     // Desaloca os dicionários
     for(i = 0; i < 3; i++){
