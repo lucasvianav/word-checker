@@ -195,16 +195,26 @@ int avl_insert(avl *t, char *word){
 // função interna que vai remover o nó cujo char *possui a menor chave
 // da subárvore com raiz *current e retornar esse nó
 node *avl_popLowest(node **current){
+    node *tmp;
+
     // caso o nó atual seja o mais à esquerda dessa subárvore (menor chave)
     if((*current)->left == NULL){
-        return *current; // retorna o nó de menor chave
+        tmp = *current;
+        *current = tmp->right;
+        if(*current != NULL){ (*current)->left = tmp->left; }
+
+        tmp->right = NULL;
+        tmp->left = NULL;
+
+        return tmp; // retorna o nó de menor chave
     }
 
     // caso o nó à esquerda do atual seja o mais à esquerda dessa subárvore (menor chave)
-    else if((*current)->left->left == NULL){
-        node *tmp = (*current)->left; // salva o nó à esquerda do atual (o de menor chave) na variável temporária
+    else if(((*current)->left)->left == NULL){
+        tmp = (*current)->left; // salva o nó à esquerda do atual (o de menor chave) na variável temporária
         (*current)->left = tmp->right; // reconstrói a ligação para removê-lo (faz a subárvore à esquerda do atual
                                         // apontar para o que estava à direita do de menor chave (que agora é apotado pela tmp)
+
 
         return tmp; // retorna o nó de menor chave
     }
@@ -222,6 +232,7 @@ int avl_auxRemove(node **current, char *key){
     else if(strcmp((*current)->word, key) == 0){
         // caso o nó seja uma folha, basta removê-lo
         if((*current)->left == NULL && (*current)->right == NULL){  
+            free((*current)->word);
             free(*current); // desaloca ele
             *current = NULL;
             return Success;
@@ -231,20 +242,33 @@ int avl_auxRemove(node **current, char *key){
         node *right = (*current)->right; //  ||    || direita  || ||
 
         // variável temporária
-        node *tmp = (left == NULL) // caso não haja uma subárvore à esquerda
-            ? right // salva a raiz da subárvore à direita na variável temporária
-            : (right == NULL) // caso haja uma subárvore esquerda e não haja uma direita
-                ? left // salva a raiz da subárvore à esquerda na variável temporária
-                : avl_popLowest(&((*current)->right)); // e caso subárvores de ambos os lados, dá um pop
-                                                   // no nó mais à esquerda da subárvore à direita para a tmp
+        node *tmp;
+
+        // caso não haja uma subárvore à esquerda, salva 
+        // a raiz da subárvore à direita na variável temporária
+        if(left == NULL){ 
+            tmp = right; 
+        }
+
+        // caso haja uma subárvore esquerda e não haja uma direita
+        // salva a raiz da subárvore à esquerda na variável temporária
+        else if(right == NULL){ 
+            tmp = left; 
+        }
+
+        // e caso subárvores de ambos os lados, dá um pop
+        // no nó mais à esquerda da subárvore à direita para a tmp
+        else{ 
+            tmp = avl_popLowest(&((*current)->right));
+
+            // e refaz as ligações
+            if(tmp != right){ tmp->right = right; }
+            if(tmp != left){ tmp->left = left; }
+        }
 
         free((*current)->word);
         free(*current); // desaloca o nó atual (removendo-o)
         *current = tmp; // e coloca o nó salvo na variável temporária em seu lugar
-
-        // refaz as ligações
-        if(*current != right){ (*current)->right = right; }
-        if(*current != left){ (*current)->left = left; }
 
         updateNodeHeight(*current);
 
@@ -313,8 +337,9 @@ int avl_getHeight(avl *t){
 // recursivamente printa em ordem a subárvore com raiz *current
 void avl_auxPrint(node *current){
     if(current != NULL){
-        printf("%s %d\n", current->word, current->height);
         avl_auxPrint(current->left);
+        // printf("%s %d\n", current->word, current->height);
+        printf("%s\n", current->word);
         avl_auxPrint(current->right);
     }
 

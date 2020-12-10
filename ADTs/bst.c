@@ -127,16 +127,26 @@ int bst_insert(bst *t, char *word){
 // função interna que vai remover o nó cujo item possui a menor chave
 // da subárvore com raiz *current e retornar esse nó
 node *bst_popLowest(node **current){
+    node *tmp;
+
     // caso o nó atual seja o mais à esquerda dessa subárvore (menor chave)
     if((*current)->left == NULL){
-        return *current; // retorna o nó de menor chave
+        tmp = *current;
+        *current = tmp->right;
+        if(*current != NULL){ (*current)->left = tmp->left; }
+
+        tmp->right = NULL;
+        tmp->left = NULL;
+
+        return tmp; // retorna o nó de menor chave
     }
 
     // caso o nó à esquerda do atual seja o mais à esquerda dessa subárvore (menor chave)
-    else if((*current)->left->left == NULL){
-        node *tmp = (*current)->left; // salva o nó à esquerda do atual (o de menor chave) na variável temporária
+    else if(((*current)->left)->left == NULL){
+        tmp = (*current)->left; // salva o nó à esquerda do atual (o de menor chave) na variável temporária
         (*current)->left = tmp->right; // reconstrói a ligação para removê-lo (faz a subárvore à esquerda do atual
                                         // apontar para o que estava à direita do de menor chave (que agora é apotado pela tmp)
+
 
         return tmp; // retorna o nó de menor chave
     }
@@ -164,28 +174,41 @@ int bst_auxRemove(node **current, char *key){
             free((*current)->word.string);
             free(*current); // desaloca ele
             *current = NULL;
-            return 1;
+            return Success;
         }
         
         node *left = (*current)->left; // subárvore à esquerda do nó
         node *right = (*current)->right; //  ||    || direita  || ||
 
         // variável temporária
-        node *tmp = (left == NULL) // caso não haja uma subárvore à esquerda
-            ? right // salva a raiz da subárvore à direita na variável temporária
-            : (right == NULL) // caso haja uma subárvore esquerda e não haja uma direita
-                ? left // salva a raiz da subárvore à esquerda na variável temporária
-                : bst_popLowest(&((*current)->right)); // e caso subárvores de ambos os lados, dá um pop
-                                                   // no nó mais à esquerda da subárvore à direita para a tmp
+        node *tmp;
+
+        // caso não haja uma subárvore à esquerda, salva 
+        // a raiz da subárvore à direita na variável temporária
+        if(left == NULL){ 
+            tmp = right; 
+        }
+
+        // caso haja uma subárvore esquerda e não haja uma direita
+        // salva a raiz da subárvore à esquerda na variável temporária
+        else if(right == NULL){ 
+            tmp = left; 
+        }
+
+        // e caso subárvores de ambos os lados, dá um pop
+        // no nó mais à esquerda da subárvore à direita para a tmp
+        else{ 
+            tmp = bst_popLowest(&((*current)->right));
+
+            // e refaz as ligações
+            if(tmp != right){ tmp->right = right; }
+            if(tmp != left){ tmp->left = left; }
+        }
 
         free((*current)->word.string);
         free(*current); // desaloca o nó atual (removendo-o)
         *current = tmp; // e coloca o nó salvo na variável temporária em seu lugar
         tmp = NULL;
-
-        // refaz as ligações
-        if(*current != right){ (*current)->right = right; }
-        if(*current != left){ (*current)->left = left; }
 
         return Success;
     }
@@ -248,8 +271,6 @@ void bst_print(bst *t){
 
 void bst_auxIntersection(node **current, avl *AVL, item **array, int *arraySize){
     if(*current != NULL){
-        bst_auxIntersection(&((*current)->left), AVL, array, arraySize);
-        
         if(avl_search(AVL, (*current)->word.string) != Error){
             char *word = (char *)malloc((strlen((*current)->word.string) + 1) * sizeof(char));
             if(word == NULL){ return; }
@@ -264,7 +285,10 @@ void bst_auxIntersection(node **current, avl *AVL, item **array, int *arraySize)
             bst_auxIntersection(current, AVL, array, arraySize);
         }
 
-        else{ bst_auxIntersection(&((*current)->right), AVL, array, arraySize); }
+        else{ 
+            bst_auxIntersection(&((*current)->left), AVL, array, arraySize);
+            bst_auxIntersection(&((*current)->right), AVL, array, arraySize); 
+        }
     }
 
     return;
