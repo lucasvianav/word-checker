@@ -9,7 +9,7 @@
 #include "ADTs/avl.h"
 #include "Util/util.h"
 
-#define MAX_INPUT_SIZE 800
+#define MAX_INPUT_SIZE 1000
 
 //  Criação da árvore de input
 
@@ -141,7 +141,7 @@ int main(){
     int n_frequent_words,current_dictionary;
     int operation = 1;
     int num_dictionaries = 0;
-    char* input = (char*)malloc(MAX_INPUT_SIZE * sizeof(char));
+    
 
     // Aloca espaço para 3 dicionários
     avl** dicts;
@@ -217,21 +217,17 @@ int main(){
 
             // Registra os valores de entrada e lê o input
             scanf("%d %d",&current_dictionary,&n_frequent_words);
+            char* input = (char*)malloc(MAX_INPUT_SIZE * sizeof(char));
             read_input(input);
 
             // Cria a árvore do input
             bst* input_tree  = bst_new();
             create_input_tree(input_tree,input);
-            
-            printf("Árvore antes:\n");
-            bst_print(input_tree);
-
-            int tamanho_arvore;
+        
+            int tamanho_arvore = 0;
 
             // Em um array de itens, insere aquilo que
             item *intersection = bst_popAvlIntersection(input_tree,dicts[current_dictionary - 1],&tamanho_arvore);
-            
-            printf("Árvore depois:\n");
             bst_print(input_tree);
 
             sort(intersection,tamanho_arvore);
@@ -239,6 +235,9 @@ int main(){
             for(i = 0; i < tamanho_arvore; i++){ 
                 printf("%s %d\n", intersection[i].string, intersection[i].occurrences); 
             }
+
+            free(input_tree);
+            free(intersection);
 
             break;
 
