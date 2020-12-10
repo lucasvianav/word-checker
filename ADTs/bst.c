@@ -271,6 +271,8 @@ void bst_print(bst *t){
 
 void bst_auxIntersection(node **current, avl *AVL, item **array, int *arraySize){
     if(*current != NULL){
+        bst_auxIntersection(&((*current)->left), AVL, array, arraySize);
+
         if(avl_search(AVL, (*current)->word.string) != Error){
             char *word = (char *)malloc((strlen((*current)->word.string) + 1) * sizeof(char));
             if(word == NULL){ return; }
@@ -285,10 +287,7 @@ void bst_auxIntersection(node **current, avl *AVL, item **array, int *arraySize)
             bst_auxIntersection(current, AVL, array, arraySize);
         }
 
-        else{ 
-            bst_auxIntersection(&((*current)->left), AVL, array, arraySize);
-            bst_auxIntersection(&((*current)->right), AVL, array, arraySize); 
-        }
+        else{ bst_auxIntersection(&((*current)->right), AVL, array, arraySize); }
     }
 
     return;
