@@ -113,10 +113,10 @@ int bst_insert(bst *t, char *word){
 
     // caso não esteja vazia:
 
-    int result = bst_auxInsert(&(t->root), newNode); // insere o nó na posição correta
-    if(result == Error){  // Caso a árvore já possua aquele item, desaloca o newNode (evitar memory leak)
-        free(newNode); 
+    // insere o nó na posição correta
+    if(bst_auxInsert(&(t->root), newNode) == Error){  // Caso a árvore já possua aquele item, desaloca o newNode (evitar memory leak)
         free(newWord);
+        free(newNode); 
         newWord = NULL;
         newNode = NULL;
     }
@@ -133,10 +133,8 @@ node *bst_popLowest(node **current){
     if((*current)->left == NULL){
         tmp = *current;
         *current = tmp->right;
-        if(*current != NULL){ (*current)->left = tmp->left; }
 
         tmp->right = NULL;
-        tmp->left = NULL;
 
         return tmp; // retorna o nó de menor chave
     }
@@ -176,23 +174,20 @@ int bst_auxRemove(node **current, char *key){
             *current = NULL;
             return Success;
         }
-        
-        node *left = (*current)->left; // subárvore à esquerda do nó
-        node *right = (*current)->right; //  ||    || direita  || ||
 
         // variável temporária
         node *tmp;
 
         // caso não haja uma subárvore à esquerda, salva 
         // a raiz da subárvore à direita na variável temporária
-        if(left == NULL){ 
-            tmp = right; 
+        if((*current)->left == NULL){ 
+            tmp = (*current)->right; 
         }
 
         // caso haja uma subárvore esquerda e não haja uma direita
         // salva a raiz da subárvore à esquerda na variável temporária
-        else if(right == NULL){ 
-            tmp = left; 
+        else if((*current)->right == NULL){ 
+            tmp = (*current)->left; 
         }
 
         // e caso subárvores de ambos os lados, dá um pop
@@ -201,8 +196,8 @@ int bst_auxRemove(node **current, char *key){
             tmp = bst_popLowest(&((*current)->right));
 
             // e refaz as ligações
-            if(tmp != right){ tmp->right = right; }
-            if(tmp != left){ tmp->left = left; }
+            if(tmp != (*current)->right){ tmp->right = (*current)->right; }
+            if(tmp != (*current)->left){ tmp->left = (*current)->left; }
         }
 
         free((*current)->word.string);
@@ -281,7 +276,6 @@ void bst_auxIntersection(node **current, avl *AVL, item **array, int *arraySize)
 
             *array = (item *)realloc(*array, ++(*arraySize) * sizeof(item));
             (*array)[*arraySize - 1] = (item) {word, (*current)->word.occurrences};
-            word = NULL;
 
             bst_auxRemove(current, (*current)->word.string);
             bst_auxIntersection(current, AVL, array, arraySize);

@@ -9,6 +9,8 @@
 #include "ADTs/avl.h"
 #include "Util/util.h"
 
+// Returns the first available index for
+// a new dict or Error if there are none
 int getNewDictIndex(avl **dicts){
     if(dicts != NULL){ for(int i = 0; i < MAX_DICTIONARIES; i++){ if(dicts[i] == NULL){ return i; } } }
     return Error;
@@ -36,7 +38,7 @@ int main(){
         // Executes different actions depending
         // on the received operation
         switch(operation){
-            case 1: // Create a new dict (if possible) with the first avaliable index
+            case 1: // Create a new dict (if possible) with the first available index
                 index = getNewDictIndex(dicts);
 
                 // If the maximum amount of dicts was met
@@ -139,7 +141,7 @@ int main(){
                     // text's words will be stored (one per element)
                     bst *input = bst_new();
 
-                    // Loop to read  the whole input text and
+                    // Loop to read the whole input text and
                     // insert each of it's words to the BST
                     while(1){
                         // Reads a word (string)
@@ -173,11 +175,11 @@ int main(){
                     // Prints the intersection and frees it's strings
                     for(int i = 0; i < intersectionSize && i < n; i++){ 
                         printf("%s %d\n", intersection[i].string, intersection[i].occurrences);
-                        free(intersection[i].string);
                     }
 
                     // Frees allocated memory
                     bst_delete(&input);
+                    for(int i = 0; i < intersectionSize; i++){ free(intersection[i].string); }
                     free(intersection);
                 }
 

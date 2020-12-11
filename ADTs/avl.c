@@ -201,13 +201,11 @@ node *avl_popLowest(node **current){
     if((*current)->left == NULL){
         tmp = *current;
         *current = tmp->right;
-        if(*current != NULL){ (*current)->left = tmp->left; }
 
         tmp->right = NULL;
-        tmp->left = NULL;
 
         return tmp; // retorna o nó de menor chave
-    }
+    } 
 
     // caso o nó à esquerda do atual seja o mais à esquerda dessa subárvore (menor chave)
     else if(((*current)->left)->left == NULL){
