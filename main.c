@@ -2,264 +2,198 @@
     Daniel Carvalho Dantas 10685702
     Lucas Viana Vilela 10748409
 */
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "ADTs/bst.h"
 #include "ADTs/avl.h"
 #include "Util/util.h"
 
-#define MAX_INPUT_SIZE 9000
-
-//  Criação da árvore de input
-
-void read_input(char* input){
-
-    int i = 0;
-    char aux;
-
-    // Ignora caracteres iniciais que possam ter valores indesejáveis
-    while(scanf("%c",&aux)){
-        if((aux != '\n') && (aux != '\r')){ break; }
-    }
-    
-    // Inicia com o valor certo
-    input[i] = aux;
-    i++;
-
-    // Realiza o scan de todos os caracteres
-    while(scanf("%c",&aux)){
-        if(aux == '#'){
-            input[i] = '\0';
-            break;
-        }   
-
-        input[i] = aux;
-        i++;
-    }
-    return ;
-}
-
-void create_input_tree(bst* input_tree,char* input){
-
-    char* token = strtok(input," ");
-
-    while(token != NULL){
-
-        bst_insert(input_tree,token);   
-        token = strtok(NULL," ");               
-        }
-}
-
-
-// Atualiza as palavras do dicionário
-void update_words(avl** dictionary, int id){
-    
-    char operation_char;
-    char* current_word = (char*)malloc(20* sizeof(char));
-
-    while(scanf(" %c",&operation_char)){
-
-        if(operation_char == '#') return; 
-
-        // Remoção
-        if(operation_char == '0'){
-
-            scanf("%s",current_word);
-            
-            int result = avl_remove(dictionary[id],current_word);
-            
-            if(result == 1) {printf("%s EXCLUIDA DE %d\n",current_word,id + 1);}
-            
-            else{
-                printf("%s INEXISTENTE EM %d\n",current_word,id + 1);
-            }
-        }
-
-        // Inserção
-        else{
-
-            scanf("%s",current_word);
-
-            int search_result = avl_search(dictionary[id],current_word);
-            
-            // Palavra não existe na árvore
-            if(search_result == Error){
-                
-                avl_insert(dictionary[id],current_word);
-                
-                printf("%s INSERIDA EM %d\n",current_word,id + 1);
-            }
-            else{ // Palavra já existe na árvore
-                printf("%s JA EXISTE EM %d\n",current_word,id + 1);
-            }
-        }
-    }
-    free(current_word); 
-    return ;
-}
-
-// Insere novas palavras no dicionário recém-criado
-void insert_words(avl** dictionary, int id){
-    
-    int wordLength;
-    char *word;
-    char aux;
-    
-    while(1){
-        wordLength = 0;
-        word = (char *)malloc(sizeof(char));
-
-        while(1){
-            scanf("%c", &aux);
-
-            word = (char *)realloc(word, ++wordLength * sizeof(char));
-            word[wordLength-1] = (aux != '\n' && aux != '#' && aux != ' ') ? aux : '\0';
-
-            if(aux == '\n' || aux == '#' || aux == ' '){ break; }
-        }
-
-        if(wordLength > 1){ 
-            avl_insert(dictionary[id], word); 
-        }
-
-        free(word);
-        
-        if(aux == '#'){ break; }
-    }
-}
-
-int get_new_dict_id(avl **dictionaries){
-    if(dictionaries != NULL){ for(int i = 0; i < MAX_DICTIONARIES; i++){ if(dictionaries[i] == NULL){ return i; } } }
+int getNewDictIndex(avl **dicts){
+    if(dicts != NULL){ for(int i = 0; i < MAX_DICTIONARIES; i++){ if(dicts[i] == NULL){ return i; } } }
     return Error;
 }
 
 int main(){
-
-    // Declaração das variáveis
-    int i;
-    int n_frequent_words,current_dictionary;
-    int operation = 1;
-    int num_dictionaries = 0;
+    int index; // Dict's index (id - 1)
+    int operation; // Operation to be executed
     
+    // Auxiliar variables in order to read
+    // and dynamically allocate words
+    char aux;
+    char *word;
+    int wordLength;
 
-    // Aloca espaço para 3 dicionários
-    avl** dicts;
-    dicts = (avl**)malloc(3 * sizeof(avl*));
+    // Array containing MAX_DICTIONARIES (3) AVLs (dictionaries)
+    avl **dicts = (avl **)malloc(MAX_DICTIONARIES * sizeof(avl *));
+    for(int i = 0; i < MAX_DICTIONARIES; i++){ dicts[i] = NULL; }
 
-    while(operation != 0){
+    // Infinite loop in which the program is executed
+    while(1){
+        // Reads the operation
+        scanf("%d", &operation);
 
-        scanf("%d",&operation);
-
+        // Executes different actions depending
+        // on the received operation
         switch(operation){
+            case 1: // Create a new dict (if possible) with the first avaliable index
+                index = getNewDictIndex(dicts);
 
-            // Sair
-            case 0:
-            break;
+                // If the maximum amount of dicts was met
+                if(index == Error){ printf("IMPOSSIVEL CRIAR\n"); }
 
-            // Criar novo dicionário
-            case 1:
-            
-            // Checa o número atual de dicionários
-            if(num_dictionaries == 3){
-                printf("IMPOSSIVEL CRIAR\n");
+                else{
+                    dicts[index] = avl_new(); // Creates a new dict
+                    
+                    // Reads all of the new dict's words (input) and adds them to it
+                    while(1){
+                        // Reads a word (string)
+                        readWord(&aux, &word, &wordLength);
+
+                        // If the string is valid (a word instead of "\0"), adds  it to the dict
+                        if(wordLength > 1){ avl_insert(dicts[index], word); }
+
+                        // Frees the word
+                        free(word);
+                        
+                        // If the input is finished
+                        if(aux == '#'){ break; }
+                    }
+
+                    printf("DICIONARIO %d CRIADO\n", index+1);
+                }
+
                 break;
-            }
 
-            // Aloca na memória um novo e encontra seu id caso seja possível um novo dicionário
-            current_dictionary =  get_new_dict_id(dicts);
-            dicts[current_dictionary] = avl_new(); 
-            
-            insert_words(dicts,current_dictionary);
+            case 2: // Updates a dict
+                scanf("%d", &index); index--; // Reads the target-dict's id and sets the index (id - 1)
 
-            // Exibe na tela o número corrigido do dicionário (vetor começa em 0)
-            printf("DICIONARIO %d CRIADO\n",current_dictionary + 1);
-            num_dictionaries++;
-        
-            break;
+                // If the target-dict doesn't exist
+                if(dicts[index] == NULL){ printf("DICIONARIO %d INEXISTENTE\n", index+1); }
 
-            // Atualizar
-            case 2:
+                else{
+                    // Reads and executes all of the updates
+                    while(1){
+                        int op; // Update operation (insertion x removal)
 
-            scanf("%d",&current_dictionary);
+                        // Reads the operation
+                        scanf("%d", &op);
 
-            // Inexistente
-            if(dicts[current_dictionary - 1] == NULL){
-                printf("DICIONARIO %d INEXISTENTE\n",current_dictionary);
+                        // Reads the word (string) to be updated
+                        readWord(&aux, &word, &wordLength);
+
+                        // If the string is valid (a word instead of "\0")
+                        if(wordLength > 1){
+                            if(op == 0){ // Removal
+                                // Tries to remove the passed word from the dict
+                                // and prints the output accordingly
+                                avl_remove(dicts[index], word) == Success 
+                                    ? printf("%s EXCLUIDA DE %d\n", word, index + 1) 
+                                    : printf("%s INEXISTENTE EM %d\n", word, index + 1);
+                            }
+
+                            else if(op == 1){ // Insertion
+                                // Tries to insert the passed word to the dict
+                                // and prints the output accordingly
+                                avl_insert(dicts[index], word) == Success
+                                    ? printf("%s INSERIDA EM %d\n",word,index + 1)
+                                    : printf("%s JA EXISTE EM %d\n",word,index + 1);
+                            }
+                        }
+                        
+                        // Frees the word
+                        free(word);
+                        
+                        // If the input is finished
+                        if(aux == '#'){ break; }
+                    }
+                }
+
                 break;
-            }
 
-            update_words(dicts,current_dictionary - 1);
+            case 3: // Deletes a dict
+                scanf("%d", &index); index--; // Reads the target-dict's id and sets the index (id - 1)
 
-            break;
+                // Tries to delete the selected dict and
+                // prints the output accordingly
+                avl_delete(&(dicts[index])) == Success
+                    ? printf("DICIONARIO %d APAGADO\n", index+1)
+                    : printf("DICIONARIO %d INEXISTENTE\n", index+1);
 
-            // Excluir
-            case 3:
-            scanf("%d",&current_dictionary);
-
-            // Inexistente
-            if(dicts[current_dictionary - 1] == NULL){
-                printf("DICIONARIO %d INEXISTENTE\n",current_dictionary);
                 break;
-            }
 
-            // Quando diferente de NULL
-            else{
-                avl_delete(&dicts[current_dictionary - 1]);
-                printf("DICIONARIO %d APAGADO\n",current_dictionary);
-                num_dictionaries--;
-            }
+            case 4: ;// Checks an input text agaisnt a dict
+                int n; // Number of words from (input ∩ dict) to be printed
 
-            break;
+                // Reads the target-dict's id and sets the index (id - 1)
+                scanf("%d %d", &index, &n); index--; 
 
-            // Verificar
-            case 4:
+                // If the selected dict doesn't exist
+                if(dicts[index] == NULL){ printf("DICIONÁRIO INEXISTENTE\n"); }
 
-            // Registra os valores de entrada e lê o input
-            scanf("%d %d",&current_dictionary,&n_frequent_words);
-            char* input = (char*)malloc(MAX_INPUT_SIZE * sizeof(char));
-            read_input(input);
+                // If n is invalid
+                else if(n <= 0){ printf("IMPOSSIVEL INFORMAR %d PALAVRAS MAIS FREQUENTES\n", n); }
 
-            if(n_frequent_words < 0 ){
-                printf("IMPOSSIVEL INFORMAR %d PALAVRAS MAIS FREQUENTES\n",n_frequent_words);
-                free(input);
+                else{
+                    // Binary search tree in which the input
+                    // text's words will be stored (one per element)
+                    bst *input = bst_new();
+
+                    // Loop to read  the whole input text and
+                    // insert each of it's words to the BST
+                    while(1){
+                        // Reads a word (string)
+                        readWord(&aux, &word, &wordLength);
+
+                        // If the string is valid (a word instead of "\0")
+                        if(wordLength > 1){ bst_insert(input, word); }
+
+                        // Frees the word
+                        free(word);
+
+                        // If the input is finished
+                        if(aux == '#'){ break; }
+                    }
+
+                    // Number of words from the input that are also in the dict
+                    int intersectionSize;
+
+                    // "input ∩ dict": intersection between the input and the dict
+                    // (i.e.: words from the input that are also in the dict)
+                    item *intersection = bst_popAvlIntersection(input, dicts[index], &intersectionSize);
+                    // (intersection words are removed from the input BST)
+
+                    // Merge sorts the intersection array by number of occurrences
+                    // (it's a stablesort, so the alphabetical order is maintained)
+                    sort(intersection, intersectionSize);
+
+                    // Prints all the input word's that weren't also in the dict
+                    bst_print(input);
+
+                    // Prints the intersection and frees it's strings
+                    for(int i = 0; i < intersectionSize && i < n; i++){ 
+                        printf("%s %d\n", intersection[i].string, intersection[i].occurrences);
+                        free(intersection[i].string);
+                    }
+
+                    // Frees allocated memory
+                    bst_delete(&input);
+                    free(intersection);
+                }
+
                 break;
-            }
 
-            // Cria a árvore do input
-            bst* input_tree  = bst_new();
-            create_input_tree(input_tree,input);
-        
-            int vector_size;
+            case 0: // Ends the program's execution
+                // Frees all allocated memory
+                for(int i = 0; i < MAX_DICTIONARIES; i++){ avl_delete(&(dicts[i])); }
+                free(dicts);
 
-            // Em um array de itens, insere aquilo que
-            item *intersection = bst_popAvlIntersection(input_tree,dicts[current_dictionary - 1],&vector_size);
-            bst_print(input_tree);
+                return 0;
 
-            sort(intersection,vector_size);
-
-            for(i = 0; (i < vector_size && i < n_frequent_words); i++){ 
-                printf("%s %d\n", intersection[i].string, intersection[i].occurrences); 
-            }
-
-            free(input_tree);
-            free(intersection);
-
-            break;
-
-            default:
-            break;
-
+            default: // If no valid operation was passed, do nothing
+                break;
         }
     }
-
-
-    // Desaloca os dicionários
-    for(i = 0; i < 3; i++){
-        free(dicts[i]);
-    }
-
-    free(dicts);
 
     return 0;
 }

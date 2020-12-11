@@ -68,3 +68,20 @@ void mergeSort(item *vector, int leftIndex, int rightIndex){
 void sort(item *vector, int vectorSize){
     return mergeSort(vector, 0, vectorSize-1);
 }
+
+void readWord(char *aux, char **word, int *wordLength){
+    *wordLength = 0;
+    *word = (char *)malloc(sizeof(char));
+
+
+    while(1){
+        scanf("%c", aux);
+
+        *word = (char *)realloc((*word), ++(*wordLength) * sizeof(char));
+        (*word)[*wordLength-1] = (*aux != '\n' && *aux != '\r' && *aux != '#' && *aux != ' ') ? *aux : '\0';
+
+        if(*aux == '\n' || *aux == '\r' || *aux == '#' || *aux == ' '){ return; }
+    }
+
+    return;
+}

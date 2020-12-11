@@ -14,7 +14,7 @@ typedef struct avl_ avl; // Binary Search Tree
 avl *avl_new();
 
 // Recebe o endereço do ponteiro para a AVL a ser excluída
-// Retorna 1 se a exclusão for bem sucedida ou Error caso contrário
+// Retorna Success se a exclusão for bem sucedida ou Error caso contrário
 int avl_delete(avl **t);
 
 // Recebe a palavra a ser inserida e o ponteiro para a AVL

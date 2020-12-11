@@ -19,7 +19,9 @@ typedef struct item_ {
 } item;
 
 // Remove a # do final do input
-void remove_hashtag(char* string);
+void remove_hashtag(char *string);
+
+void readWord(char *aux, char **word, int *wordLength);
 
 // Merge sorts the vector by item.occurrences (higher to lower)
 void sort(item *vector, int vectorSize);
