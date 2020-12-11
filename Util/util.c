@@ -7,16 +7,6 @@
 #include <stdlib.h> 
 #include <string.h>
 #include "util.h"
-#include "../ADTs/bst.h"
-
-void remove_hashtag(char *string){
-    int i = 0;
-    while(string[i] != '#'){ i++; }
-    string[i] = '\0';
-
-    return;
-}
-
 
 // Receives a vector and the position of two sorted subvectors inside it - merges both of them into a fully sorted one
 void mergeSubvectors(item *vector, int firstLeftIndex, int firstRightIndex, int secondLeftIndex, int secondRightIndex){
