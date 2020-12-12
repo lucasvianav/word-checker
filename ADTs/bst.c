@@ -39,7 +39,7 @@ void bst_auxDelete(node **current){
         // após desalocar as subárvores esquerda e direita, faz o mesmo pra raiz
         // (percurso pós-ordem)
 
-        free((*current)->word.string);
+        free((*current)->word.string); // desaloca a string do nó raiz
         free(*current); // desaloca o nó-raiz
         *current = NULL;
     }
@@ -73,7 +73,7 @@ int bst_auxInsert(node **current, node *new){
 
     // se a palavra do nó atual for igual ao do novo nó
     if(strcmp((*current)->word.string, new->word.string) == 0){ 
-        (*current)->word.occurrences += 1;
+        (*current)->word.occurrences += 1; // incrementa o número de ocorrências dela
         return Error;
     }
 
@@ -88,16 +88,17 @@ int bst_auxInsert(node **current, node *new){
 
 int bst_insert(bst *t, char *word){
     node *newNode = (node *)malloc(sizeof(node)); // aloca um novo nó
-    char *newWord = (char *)malloc((strlen(word) + 1) * sizeof(char));
+    char *newWord = (char *)malloc((strlen(word) + 1) * sizeof(char)); // aloca uma sting para aquele nó
 
-    // checa se a árvore existe e se a alocação
-    // do novo nó foi bem-sucedida
+    // checa se a árvore existe e se a alocação do novo nó foi bem-sucedida
+    // caso contrário, libera a memória alocada (se alocada)
     if(t == NULL || newNode == NULL || newWord == NULL){ 
         if(newNode != NULL){ free(newNode); }
         if(newWord != NULL){ free(newWord); }
         return Error; 
     }
 
+    // copia a palavra recebida para a string alocada
     strcpy(newWord, word);
 
     // ajusta as informações do novo nó
@@ -113,8 +114,9 @@ int bst_insert(bst *t, char *word){
 
     // caso não esteja vazia:
 
-    // insere o nó na posição correta
-    if(bst_auxInsert(&(t->root), newNode) == Error){  // Caso a árvore já possua aquele item, desaloca o newNode (evitar memory leak)
+    // tenta inserir o nó na posição correta e caso a árvore já possua
+    // aquele item, libera a memória alocada (evitar memory leak)
+    if(bst_auxInsert(&(t->root), newNode) == Error){
         free(newWord);
         free(newNode); 
         newWord = NULL;
@@ -126,13 +128,16 @@ int bst_insert(bst *t, char *word){
 
 // função interna que vai remover o nó cujo item possui a menor chave
 // da subárvore com raiz *current e retornar esse nó
-node *bst_popLowest(node **current){
-    node *tmp;
+node *bst_pullLowest(node **current){
+    node *tmp; // variável temporária
 
     // caso o nó atual seja o mais à esquerda dessa subárvore (menor chave)
     if((*current)->left == NULL){
-        tmp = *current;
-        *current = tmp->right;
+        tmp = *current; // salva ele na variável temporária
+
+        // reconstrói a ligação para removê-lo da árvore, 
+        // substituindo-o pelo que está à sua direita
+        *current = tmp->right; 
 
         tmp->right = NULL;
 
@@ -142,14 +147,17 @@ node *bst_popLowest(node **current){
     // caso o nó à esquerda do atual seja o mais à esquerda dessa subárvore (menor chave)
     else if(((*current)->left)->left == NULL){
         tmp = (*current)->left; // salva o nó à esquerda do atual (o de menor chave) na variável temporária
-        (*current)->left = tmp->right; // reconstrói a ligação para removê-lo (faz a subárvore à esquerda do atual
-                                        // apontar para o que estava à direita do de menor chave (que agora é apotado pela tmp)
 
+        // reconstrói a ligação para removê-lo (faz a subárvore à esquerda do atual
+        // apontar para o que estava à direita do de menor chave, que agora é apotado pela tmp)
+        (*current)->left = tmp->right; 
+                                        
 
         return tmp; // retorna o nó de menor chave
     }
 
-    return bst_popLowest(&((*current)->left)); // recursivamente procura pelo nó de menor chave
+    // recursivamente procura pelo nó de menor chave, caso ele ainda não tenha sido encontrado
+    return bst_pullLowest(&((*current)->left)); 
 }
 
 // função interna que procura o nó a ser removido (com chave key)
@@ -169,9 +177,10 @@ int bst_auxRemove(node **current, char *key){
     else{
         // caso o nó seja uma folha, basta removê-lo
         if((*current)->left == NULL && (*current)->right == NULL){  
-            free((*current)->word.string);
+            free((*current)->word.string); // desaloca a string dele
             free(*current); // desaloca ele
             *current = NULL;
+
             return Success;
         }
 
@@ -190,17 +199,17 @@ int bst_auxRemove(node **current, char *key){
             tmp = (*current)->left; 
         }
 
-        // e caso subárvores de ambos os lados, dá um pop
-        // no nó mais à esquerda da subárvore à direita para a tmp
+        // e caso subárvores de ambos os lados, dá um pull no
+        // nó mais à esquerda da subárvore à direita para a tmp
         else{ 
-            tmp = bst_popLowest(&((*current)->right));
+            tmp = bst_pullLowest(&((*current)->right));
 
             // e refaz as ligações
             if(tmp != (*current)->right){ tmp->right = (*current)->right; }
             if(tmp != (*current)->left){ tmp->left = (*current)->left; }
         }
 
-        free((*current)->word.string);
+        free((*current)->word.string); // desaloca a string do nó atual
         free(*current); // desaloca o nó atual (removendo-o)
         *current = tmp; // e coloca o nó salvo na variável temporária em seu lugar
         tmp = NULL;
@@ -247,11 +256,11 @@ int bst_getHeight(bst *t){
 }
 
 // recursivamente printa em ordem a subárvore com raiz *current
+// (não printa o número de ocorrências da palavras)
 void bst_auxPrint(node *current){
     if(current != NULL){
         bst_auxPrint(current->left);
         printf("%s\n", current->word.string);
-        // printf("%s %d\n", current->word.string, current->word.occurrences);
         bst_auxPrint(current->right);
     }
 
@@ -264,23 +273,37 @@ void bst_print(bst *t){
     return;
 }
 
+// recursivamente busca elementos da BST de raiz *current que também
+// façam aprte da AVL e faz as operações necessárias com eles
+// (percurso em ordem)
 void bst_auxIntersection(node **current, avl *AVL, item **array, int *arraySize){
-    if(*current != NULL){
+    if(*current != NULL){ // caso base é *current == NULL
+        // faz a busca na subárvore à esquerda
         bst_auxIntersection(&((*current)->left), AVL, array, arraySize);
 
+        // verifica se a palavra do nó atual (*current) está na AVL. se estiver:
         if(avl_search(AVL, (*current)->word.string) != Error){
+            // aloca uma string com mesmo tamanho da do nó atual
             char *word = (char *)malloc((strlen((*current)->word.string) + 1) * sizeof(char));
-            if(word == NULL){ return; }
+            if(word == NULL){ return; } // se a alocação falhar, ocorreu um erro
 
+            // copia a palavra da string do nó atual para a recém-alocada
             strcpy(word, (*current)->word.string);
 
+            // realoca o array de itens para poder incluir o novo (do nó atual)
             *array = (item *)realloc(*array, ++(*arraySize) * sizeof(item));
+
+            // coloca o item do nó atual na última posição do array de itens
             (*array)[*arraySize - 1] = (item) {word, (*current)->word.occurrences};
 
+            // remove o nó atual da BST
             bst_auxRemove(current, (*current)->word.string);
+
+            // faz a busca novamente a partir do novo "nó atual"
             bst_auxIntersection(current, AVL, array, arraySize);
         }
 
+        // caso a palavra do nó atual não esteja na AVL, faz a busca na subárvore à direita
         else{ bst_auxIntersection(&((*current)->right), AVL, array, arraySize); }
     }
 
@@ -288,11 +311,14 @@ void bst_auxIntersection(node **current, avl *AVL, item **array, int *arraySize)
 }
 
 item *bst_popAvlIntersection(bst *BST, avl *AVL, int *arraySize){
-    *arraySize = 0;
+    *arraySize = 0; // o array começa com 0 elementos
     item *array = NULL;
 
+    // caso as árvores existam
     if(BST != NULL && AVL != NULL){
-        array = (item *)malloc(sizeof(item));
+        array = (item *)malloc(sizeof(item)); // aloca um elemento pro array
+
+        // e começa a buscar os elementos da intersecção
         if(array != NULL){ bst_auxIntersection(&(BST->root), AVL, &array, arraySize); }
     }
 

@@ -11,39 +11,45 @@
 
 typedef struct bst_ bst; // Binary Search Tree
 
-// Retorna o ponteiro para a BST criada
+// Returns a pointer to the created BST
 bst *bst_new();
 
-// Recebe o endereço do ponteiro para a BST a ser excluída
-// Retorna 1 se a exclusão for bem sucedida ou Error caso contrário
+// Receives the pointer to the target-BST's address
+// If the deletion was successful, returns Success, else Error
+// (if the BST doesn't exit - i.e. is NULL - returns Error)
 int bst_delete(bst **t);
 
-// Recebe o item a ser inserido e o ponteiro para a BST
-// Retorna 1 se a inserção for bem-sucedida ou Error caso contrário
+// Receives the word to be inserted and the pointer to the target-BST
+// If the insertion was successful, returns Success, else Error
+// (if the BST already contains that word, increments it's occurrence
+// and returns Success)
+// The BST is in alphabetical order
 int bst_insert(bst *t, char *word);
 
-// Recebe a chave do item a ser removido e o ponteiro para a BST
-// Retorna 1 se a inserção for bem-sucedida ou Error caso contraŕio
+// Receives word (key) to be removed and the pointer to the target-BST
+// If the removal was successful, returns Success, else Error
 int bst_remove(bst *t, char *key);
 
-// Recebe o ponteiro para a BST
-// Retorna a altura da BST ou Error caso ela não exista
+// Receives the pointer to the target-BST
+// If the BST exists, eturns the it's height, else Error
 int bst_getHeight(bst *t);
 
-// Recebe a chave do item a ser buscado e o ponteiro para a BST
-// Retorna o título do item encontrado ou Error caso ele não seja
-// encontrado
+// Receives the word (key) to be searched and the pointer
+// to the target-AVl
+// If the word is found, returns it's item, else ErrorItem
 item bst_search(bst *t, char *key);
 
-// Recebem o ponteiro para a BST
-// Printa todos os itens da BST em ordem
+// Receives the pointer to the target-BST
+// Prints all of the BST's words in-order
 void bst_print(bst *t);
 
-// Recebe uma bst, uma avl e um inteiro (por referência) que vai representar
-// o tamanho do array que retorna
-// vai percorrer a bst em ordem e checar se cada elemento está contido na avl.
-// todos os elementos que estiverem contidos na avl, serão removidos da bst
-// e armazenados em um array de item, que será retornado pela função
+// Receives the pointer to the target-BST and the target-AVL, as well as 
+// a pointer to an int which represents the intersection's size (number of
+// elements in it's array)
+// Goes through the BST in-order and checks each element agaisnt the AVL
+// When it finds an element in the BST that's also in the AVL, pulls it from
+// the BST and inserts it into an array of items
+// Returns the built array of items (intersection between the BST and the AVL)
 item *bst_popAvlIntersection(bst *BST, avl *AVL, int *arraySize);
 
 #endif
