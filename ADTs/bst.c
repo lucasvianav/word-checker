@@ -139,8 +139,6 @@ node *bst_pullLowest(node **current){
         // substituindo-o pelo que está à sua direita
         *current = tmp->right; 
 
-        tmp->right = NULL;
-
         return tmp; // retorna o nó de menor chave
     }
 
