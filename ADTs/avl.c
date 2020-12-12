@@ -12,7 +12,7 @@
 
 struct node_ {
     char *word;
-    int height;
+    int height; // altura do nó
     struct node_ *left; // subárvore à esquerda do nó
     struct node_ *right; // subárvore à direita do nó
 };
@@ -42,7 +42,7 @@ void avl_auxDelete(node **current){
         // após desalocar as subárvores esquerda e direita, faz o mesmo pra raiz
         // (percurso pós-ordem)
 
-        free((*current)->word);
+        free((*current)->word); // desaloca a string do nó raiz
         free(*current); // desaloca o nó-raiz
         *current = NULL;
     }
@@ -157,16 +157,17 @@ int avl_auxInsert(node **current, node *new){
 
 int avl_insert(avl *t, char *word){
     node *newNode = (node *)malloc(sizeof(node)); // aloca um novo nó
-    char *newWord = (char *)malloc((strlen(word) + 1) * sizeof(char));
+    char *newWord = (char *)malloc((strlen(word) + 1) * sizeof(char)); // aloca uma sting para aquele nó
 
-    // checa se a árvore existe e se a alocação
-    // do novo nó foi bem-sucedida
+    // checa se a árvore existe e se a alocação do novo nó foi bem-sucedida
+    // caso contrário, libera a memória alocada (se alocada)
     if(t == NULL || newNode == NULL || newWord == NULL){ 
         if(newNode != NULL){ free(newNode); }
         if(newWord != NULL){ free(newWord); }
         return Error; 
     }
 
+    // copia a palavra recebida para a string alocada
     strcpy(newWord, word);
 
     // ajusta as informações do novo nó
@@ -183,8 +184,12 @@ int avl_insert(avl *t, char *word){
 
     // caso não esteja vazia:
 
-    int output = avl_auxInsert(&(t->root), newNode); // insere o nó na posição correta
-    if(output == Error){  // Caso a árvore já possua aquele item, desaloca o newNode (evitar memory leak)
+    // tenta inserir o nó na posição correta
+    int output = avl_auxInsert(&(t->root), newNode); 
+
+    // Caso a árvore já possua aquele item libera 
+    // a memória alocada (evitar memory leak)
+    if(output == Error){  
         free(newNode->word);
         free(newNode); 
     }
@@ -194,12 +199,15 @@ int avl_insert(avl *t, char *word){
 
 // função interna que vai remover o nó cujo char *possui a menor chave
 // da subárvore com raiz *current e retornar esse nó
-node *avl_popLowest(node **current){
-    node *tmp;
+node *avl_pullLowest(node **current){
+    node *tmp;  // variável temporária
 
     // caso o nó atual seja o mais à esquerda dessa subárvore (menor chave)
     if((*current)->left == NULL){
-        tmp = *current;
+        tmp = *current; // salva ele na variável temporária
+
+        // reconstrói a ligação para removê-lo da árvore, 
+        // substituindo-o pelo que está à sua direita
         *current = tmp->right;
 
         tmp->right = NULL;
@@ -210,17 +218,19 @@ node *avl_popLowest(node **current){
     // caso o nó à esquerda do atual seja o mais à esquerda dessa subárvore (menor chave)
     else if(((*current)->left)->left == NULL){
         tmp = (*current)->left; // salva o nó à esquerda do atual (o de menor chave) na variável temporária
-        (*current)->left = tmp->right; // reconstrói a ligação para removê-lo (faz a subárvore à esquerda do atual
-                                        // apontar para o que estava à direita do de menor chave (que agora é apotado pela tmp)
 
+        // reconstrói a ligação para removê-lo (faz a subárvore à esquerda do atual
+        // apontar para o que estava à direita do de menor chave (que agora é apotado pela tmp)
+        (*current)->left = tmp->right; 
 
         return tmp; // retorna o nó de menor chave
     }
 
-    return avl_popLowest(&((*current)->left)); // recursivamente procura pelo nó de menor chave
+    // recursivamente procura pelo nó de menor chave, caso ele ainda não tenha sido encontrado
+    return avl_pullLowest(&((*current)->left));
 }
 
-// função interna que procura o nó a ser removido (com chave key)
+// função interna que procura o nó a ser removido (com palavra key)
 // na subárvore com raiz *current
 int avl_auxRemove(node **current, char *key){
     // caso chegue-se a um nó nulo, significa que o nó a ser removido não está na árvore
@@ -230,7 +240,7 @@ int avl_auxRemove(node **current, char *key){
     else if(strcmp((*current)->word, key) == 0){
         // caso o nó seja uma folha, basta removê-lo
         if((*current)->left == NULL && (*current)->right == NULL){  
-            free((*current)->word);
+            free((*current)->word); // desaloca a string dele
             free(*current); // desaloca ele
             *current = NULL;
             return Success;
@@ -257,18 +267,18 @@ int avl_auxRemove(node **current, char *key){
         // e caso subárvores de ambos os lados, dá um pop
         // no nó mais à esquerda da subárvore à direita para a tmp
         else{ 
-            tmp = avl_popLowest(&((*current)->right));
+            tmp = avl_pullLowest(&((*current)->right));
 
             // e refaz as ligações
             if(tmp != right){ tmp->right = right; }
             if(tmp != left){ tmp->left = left; }
         }
 
-        free((*current)->word);
+        free((*current)->word); // desaloca a string do nó atual
         free(*current); // desaloca o nó atual (removendo-o)
         *current = tmp; // e coloca o nó salvo na variável temporária em seu lugar
 
-        updateNodeHeight(*current);
+        updateNodeHeight(*current); // atualiza a altura do nó atual
 
         return Success;
     }
@@ -336,7 +346,6 @@ int avl_getHeight(avl *t){
 void avl_auxPrint(node *current){
     if(current != NULL){
         avl_auxPrint(current->left);
-        // printf("%s %d\n", current->word, current->height);
         printf("%s\n", current->word);
         avl_auxPrint(current->right);
     }

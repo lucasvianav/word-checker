@@ -8,35 +8,37 @@
 
 #include "../Util/util.h"
 
-typedef struct avl_ avl; // Binary Search Tree
+typedef struct avl_ avl;
 
-// Retorna o ponteiro para a AVL criada
+// Returns a pointer to the created AVL
 avl *avl_new();
 
-// Recebe o endereço do ponteiro para a AVL a ser excluída
-// Retorna Success se a exclusão for bem sucedida ou Error caso contrário
+// Receives the pointer to the target-AVL's address
+// If the deletion was successful, returns Success, else Error
+// (if the AVL doesn't exit - i.e. is NULL - returns Error)
 int avl_delete(avl **t);
 
-// Recebe a palavra a ser inserida e o ponteiro para a AVL
-// Retorna Success se a inserção for bem-sucedida ou Error caso contrário
+// Receives the word to be inserted and the pointer to the target-AVL
+// If the insertion was successful, returns Success, else Error
+// (if the AVL already contains that word, returns Error)
+// The AVL is in alphabetical order
 int avl_insert(avl *t, char *word);
 
-// Recebe a chave do char *a ser removido e o ponteiro para a AVL
-// Retorna 1 se a inserção for bem-sucedida
-// ou Error caso contrário (se a palavra já estiver contida na AVL)
+// Receives word (key) to be removed and the pointer to the target-AVL
+// If the removal was successful, returns Success, else Error
 int avl_remove(avl *t, char *key);
 
-// Recebe o ponteiro para a AVL
-// Retorna a altura da AVL ou Error caso ela não exista
+// Receives the pointer to the target-AVL
+// If the AVL exists, eturns the it's height, else Error
 int avl_getHeight(avl *t);
 
-// Recebe a palavra a ser buscada e o ponteiro para a AVL
-// Retorna a altura do nó em que está ou Error caso ele não seja
-// encontrado
+// Receives the word (key) to be searched and the pointer
+// to the target-AVl
+// If the word is found, returns it's node's height, else Error
 int avl_search(avl *t, char *key);
 
-// Recebem o ponteiro para a AVL
-// Printa todos os itens da AVL em ordem
+// Receives the pointer to the target-AVL
+// Prints all of the AVL's words in-order
 void avl_print(avl *t);
 
 #endif

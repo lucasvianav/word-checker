@@ -160,7 +160,7 @@ node *bst_pullLowest(node **current){
     return bst_pullLowest(&((*current)->left)); 
 }
 
-// função interna que procura o nó a ser removido (com chave key)
+// função interna que procura o nó a ser removido (com palavra key)
 // na subárvore com raiz *current
 int bst_auxRemove(node **current, char *key){
     // caso chegue-se a um nó nulo, significa que o nó a ser removido não está na árvore
