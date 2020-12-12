@@ -21,7 +21,7 @@ void mergeSubvectors(item *vector, int firstLeftIndex, int firstRightIndex, int 
 
         // If there are still elements in both subvector
         if(i <= firstRightIndex && j <= secondRightIndex){ 
-            // Compares them and copies the lowest one to tmp
+            // Compares them and copies the higher one to tmp
             if(vector[i].occurrences >= vector[j].occurrences){ tmp[k] = vector[i++]; }
             else{ tmp[k] = vector[j++]; }
         }
@@ -45,10 +45,14 @@ void mergeSubvectors(item *vector, int firstLeftIndex, int firstRightIndex, int 
 // MERGE SORT
 void mergeSort(item *vector, int leftIndex, int rightIndex){
     if(rightIndex > leftIndex){
+        // Middle of the vector
         int middleIndex = (rightIndex + leftIndex) / 2;
 
+        // Sorts the first half
         mergeSort(vector, leftIndex, middleIndex);
+        // Sorts the second half
         mergeSort(vector, middleIndex + 1, rightIndex);
+        // Merges both sorted halfs
         mergeSubvectors(vector, leftIndex, middleIndex, middleIndex + 1, rightIndex);
     }
 
@@ -56,20 +60,26 @@ void mergeSort(item *vector, int leftIndex, int rightIndex){
 }
 
 void sort(item *vector, int vectorSize){
+    // Merge sorts the whole vector
     return mergeSort(vector, 0, vectorSize-1);
 }
 
 void readWord(char *aux, char **word, int *wordLength){
-    *wordLength = 0;
-    *word = (char *)malloc(sizeof(char));
+    *wordLength = 0; // number of chars in the word ('\0' included)
+    *word = (char *)malloc(sizeof(char)); // word
 
-
+    // reads each of the word's letters
     while(1){
+        // reads a cahr
         scanf("%c", aux);
 
+        // reallocates the word so it'll fit the new char
         *word = (char *)realloc((*word), ++(*wordLength) * sizeof(char));
+
+        // adds either the new char or '\0' (if it's invalid) to the word
         (*word)[*wordLength-1] = (*aux != '\n' && *aux != '\r' && *aux != '#' && *aux != ' ') ? *aux : '\0';
 
+        // if '\0' was added to the word, then it's finished
         if(*aux == '\n' || *aux == '\r' || *aux == '#' || *aux == ' '){ return; }
     }
 

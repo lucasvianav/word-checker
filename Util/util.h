@@ -11,13 +11,15 @@
 #define ErrorStr "-32000"
 #define ErrorItem (item) {ErrorStr, Error}
 
+// Maximum number of simultaneous dictionaries
 #define MAX_DICTIONARIES 3
 
 typedef struct item_ {
-    char *string;
-    int occurrences;
+    char *string; // word
+    int occurrences; // number of times the word appears in a text
 } item;
 
+// Reads a word from stdin
 void readWord(char *aux, char **word, int *wordLength);
 
 // Merge sorts the vector by item.occurrences (higher to lower)
