@@ -52,7 +52,7 @@ int main(){
 
                     // If the string is valid (a word instead of "\0") 
                     // and a dict was created, adds it to the dict
-                    if(wordLength > 1 && dicts[index] != NULL){ avl_insert(dicts[index], word); }
+                    if((index != Error) && (wordLength > 1)){ avl_insert(dicts[index], word); }
 
                     // Frees the word
                     free(word);
