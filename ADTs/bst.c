@@ -310,7 +310,7 @@ void bst_auxIntersection(node **current, avl *AVL, item **array, int *arraySize)
     return;
 }
 
-item *bst_popAvlIntersection(bst *BST, avl *AVL, int *arraySize){
+item *bst_pullAvlIntersection(bst *BST, avl *AVL, int *arraySize){
     *arraySize = 0; // o array começa com 0 elementos
     item *array = NULL;
 

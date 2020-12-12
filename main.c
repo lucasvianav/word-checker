@@ -52,7 +52,7 @@ int main(){
 
                     // If the string is valid (a word instead of "\0") 
                     // and a dict was created, adds it to the dict
-                    if((index != Error) && (wordLength > 1)){ avl_insert(dicts[index], word); }
+                    if(wordLength > 1 && index != Error){ avl_insert(dicts[index], word); }
 
                     // Frees the word
                     free(word);
@@ -162,7 +162,7 @@ int main(){
 
                     // "input ∩ dict": intersection between the input and the dict
                     // (i.e.: words from the input that are also in the dict)
-                    item *intersection = bst_popAvlIntersection(input, dicts[index], &intersectionSize);
+                    item *intersection = bst_pullAvlIntersection(input, dicts[index], &intersectionSize);
                     // (intersection words are removed from the input BST)
 
                     // Merge sorts the intersection array by number of occurrences

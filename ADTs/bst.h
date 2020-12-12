@@ -50,6 +50,6 @@ void bst_print(bst *t);
 // When it finds an element in the BST that's also in the AVL, pulls it from
 // the BST and inserts it into an array of items
 // Returns the built array of items (intersection between the BST and the AVL)
-item *bst_popAvlIntersection(bst *BST, avl *AVL, int *arraySize);
+item *bst_pullAvlIntersection(bst *BST, avl *AVL, int *arraySize);
 
 #endif
