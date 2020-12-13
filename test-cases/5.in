@@ -1,13 +1,19 @@
 1
+arvore
+bola
+carro
 daniel
+esfinge
+farao
+guerra
+heroi
 #
-1
-lucas
+2 1
+0 heroi
+0 farao
+0 esfinge
+0 daniel
 #
-1
-yann
-#
-1
-web
-#
+4 1 10
+arvore bola carro daniel esfinge farao guerra heroi#
 0
