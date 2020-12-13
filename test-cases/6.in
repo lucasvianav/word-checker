@@ -1,0 +1,42 @@
+1
+daniel
+carvalho
+#
+1
+lucas
+viana
+#
+1
+yann
+amado
+#
+1
+acabou
+web
+#
+3 3
+3 3
+3 2
+2 2
+0 nao
+1 funciona
+#
+2 1
+1 daniel
+0 daniel
+0 daniel
+1 daniel
+1 teste
+1 whatever
+#
+4 1 0
+nao vai funcionar porque n e igual a zero#
+4 1 -1
+nao vai funcionar porque n e menor que o#
+4 2 2
+nao vai funcionar porque o dicionario 2 foi apagado#
+4 1 3
+daniel e a palavra mais comum e daniel teste vai ser a terceira e carvalho a segunda#
+4 1 20
+as palavras daniel carvalho teste e whatever vao aparecer porque eu pedi n maior que o max possivel#
+0
