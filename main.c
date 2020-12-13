@@ -129,10 +129,7 @@ int main(){
                 scanf("%d %d", &index, &n); index--; 
 
                 // If the selected dict doesn't exist
-                if(dicts[index] == NULL){ printf("DICIONÁRIO INEXISTENTE\n"); }
-
-                // If n is invalid
-                else if(n <= 0){ printf("IMPOSSIVEL INFORMAR %d PALAVRAS MAIS FREQUENTES\n", n); }
+                if(dicts[index] == NULL){ printf("DICIONARIO INEXISTENTE\n"); }
 
                 // Binary search tree in which the input
                 // text's words will be stored (one per element)
@@ -146,7 +143,7 @@ int main(){
 
                     // If the string is valid (a word instead of "\0")
                     // and if the target-dict exists and n is valid
-                    if(wordLength > 1 && dicts[index] != NULL && n > 0){ bst_insert(input, word); }
+                    if(wordLength > 1 && dicts[index] != NULL){ bst_insert(input, word); }
 
                     // Frees the word
                     free(word);
@@ -156,7 +153,7 @@ int main(){
                 }
 
                 // If the target-dict exists and n is valid
-                if(dicts[index] != NULL && n > 0){
+                if(dicts[index] != NULL){
                     // Number of words from the input that are also in the dict
                     int intersectionSize;
 
@@ -172,15 +169,21 @@ int main(){
                     // Prints all the input word's that weren't also in the dict
                     bst_print(input);
 
-                    // Prints the intersection and frees it's strings
-                    for(int i = 0; i < intersectionSize && i < n; i++){ 
-                        printf("%s %d\n", intersection[i].string, intersection[i].occurrences);
+                    if(n > 0){
+                        // Prints the intersection and frees it's strings
+                        for(int i = 0; i < intersectionSize && i < n; i++){ 
+                            printf("%s %d\n", intersection[i].string, intersection[i].occurrences);
+                        }
                     }
 
                     // Frees allocated memory
                     for(int i = 0; i < intersectionSize; i++){ free(intersection[i].string); }
                     free(intersection);
                 }
+
+                // If n is invalid
+                if(n <= 0){ printf("IMPOSSIVEL INFORMAR %d PALAVRAS MAIS FREQUENTES\n", n); }
+
                 bst_delete(&input);
 
                 break;
